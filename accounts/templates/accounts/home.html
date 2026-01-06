@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Legal</title>
+    <link rel="stylesheet" href="{% static 'accounts/css/style.css' %}">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="logo">⚖ SALLAH</div>
+    <nav>
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'services' %}">Practice Areas</a>
+        <a href="{% url 'experts' %}">Experts</a>
+        <a href="{% url 'login' %}">Login</a>
+        <button class="contact-btn">CONTACT</button>
+    </nav>
+</header>
+
+<section class="hero">
+    <div class="hero-content">
+        <h1>Lawyers You Can <span>Trust.</span></h1>
+        <p>
+            Sallah is a boutique law firm dedicated to delivering high-quality
+            legal services to individuals and businesses.
+        </p>
+
+        <a href="{% url 'services' %}" class="main-btn">TALK TO A LAWYER</a>
+
+        <div class="stats">
+            <div><h3>25+</h3><p>Years Experience</p></div>
+            <div><h3>500+</h3><p>Clients Served</p></div>
+            <div><h3>98%</h3><p>Success Rate</p></div>
+        </div>
+    </div>
+
+    <div class="hero-image">
+        <img src="{% static 'accounts/images/statue.png' %}" alt="Lady Justice">
+    </div>
+</section>
+
+<script src="{% static 'accounts/js/script.js' %}"></script>
+</body>
+</html>
