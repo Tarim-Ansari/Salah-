@@ -125,3 +125,6 @@ STATICFILES_DIRS = [
 from django.conf import settings
 from django.conf.urls.static import static
 
+AUTH_USER_MODEL = 'accounts.User'
+
+
