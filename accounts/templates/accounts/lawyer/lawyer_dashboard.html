@@ -1,0 +1,85 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lawyer Dashboard | SALLAH</title>
+    <link rel="stylesheet" href="{% static 'accounts/css/lawyer_dashboard.css' %}">
+</head>
+<body>
+
+<div class="dashboard">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="brand">⚖ SALLAH</div>
+
+        <nav>
+            <a class="active">Dashboard</a>
+            <a href="{% url 'lawyer_consultations' %}">Consultations</a>
+            <a href="{% url 'lawyer_earnings' %}">Earnings</a>
+            <a href="{% url 'lawyer_profile' %}">Profile</a>
+            <a href="#">Settings</a>
+        </nav>
+
+        <a href="{% url 'logout' %}" class="logout">Logout</a>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <!-- HEADER -->
+        <header class="header">
+            <h1>Welcome, Advocate</h1>
+            <span class="status online">Online</span>
+        </header>
+
+        <!-- PROFILE CARD -->
+        <section class="profile-card">
+            <div class="avatar"></div>
+            <div>
+                <h3>{{ request.user.get_full_name|default:"Advocate" }}</h3>
+                <p>{{ request.user.email }}</p>
+                <p class="muted">
+                    Experience: {{ profile.experience|default:"0" }} years |
+                    Bar ID: {{ profile.bar_council_id|default:"-" }}
+                </p>
+            </div>
+        </section>
+
+        <!-- STATS -->
+        <section class="stats">
+            <div class="stat-card">
+                <h2>₹{{ todays_earnings|default:"0" }}</h2>
+                <span>Today's Earnings</span>
+            </div>
+
+            <div class="stat-card">
+                <h2>{{ total_consultations|default:"0" }}</h2>
+                <span>Consultations</span>
+            </div>
+
+            <div class="stat-card">
+                <h2>{{ rating|default:"0.0" }} ⭐</h2>
+                <span>Rating</span>
+            </div>
+        </section>
+
+        <!-- REQUESTS -->
+        <section class="requests">
+            <h3>Incoming Requests</h3>
+
+            {% if requests %}
+                {% for r in requests %}
+                <div class="request-row">
+                    <span>{{ r.client_name }} • {{ r.issue }}</span>
+                    <div class="actions">
+                        <button class="accept">Accept</button>
+                        <button class="reject">Reject</button>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p class="muted">No incoming requests</p>
+            {% endif %}
+        </section>

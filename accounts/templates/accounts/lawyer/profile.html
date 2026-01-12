@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Profile | SALLAH</title>
+    <link rel="stylesheet" href="{% static 'accounts/css/dashboard.css' %}">
+</head>
+<body>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <h2 class="logo">SALLAH</h2>
+
+        <ul>
+            <li><a href="{% url 'lawyer_dashboard' %}">Dashboard</a></li>
+            <li><a href="{% url 'lawyer_consultations' %}">Consultations</a></li>
+            <li class="active"><a href="{% url 'lawyer_profile' %}">Profile</a></li>
+            <li>Earnings</li>
+            <li>Settings</li>
+        </ul>
+
+        <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="content">
+
+        <div class="header">
+            <h1>My Profile</h1>
+        </div>
+
+        <div class="card">
+            <form method="POST">
+                {% csrf_token %}
+
+                <label>Full Name</label>
+                <input type="text" value="{{ profile.user.username }}" disabled>
+
+                <label>Email</label>
+                <input type="email" value="{{ profile.user.email }}" disabled>
+
+                <label>Bar Council ID</label>
+                <input type="text" name="bar_council_id"
+                       value="{{ profile.bar_council_id }}" required>
+
+                <label>Experience (years)</label>
+                <input type="number" name="experience_years"
+                       value="{{ profile.experience_years }}" min="0" required>
+
+                <label class="checkbox">
+                    <input type="checkbox" name="is_available"
+                        {% if profile.is_available %}checked{% endif %}>
+                    Available for consultations
+                </label>
+
+                <button class="btn accept" type="submit">
+                    Save Changes
+                </button>
+            </form>
+        </div>
+
+    </main>
+</div>
+
+</body>
+</html>

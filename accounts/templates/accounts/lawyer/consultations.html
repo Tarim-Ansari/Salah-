@@ -1,0 +1,93 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Consultations | SALLAH</title>
+    <link rel="stylesheet" href="{% static 'accounts/css/dashboard.css' %}">
+</head>
+<body>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <h2 class="logo">SALLAH</h2>
+        <ul>
+            <li>
+                <a href="{% url 'lawyer_dashboard' %}">Dashboard</a>
+            </li>
+            <li class="active">
+                Consultations
+            </li>
+            <li>
+                <a href="#">Earnings</a>
+            </li>
+            <li>
+                <a href="#">Profile</a>
+            </li>
+            <li>
+                <a href="#">Settings</a>
+            </li>
+        </ul>
+
+        <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="content">
+
+        <!-- HEADER -->
+        <div class="header">
+            <h1>Consultation Requests</h1>
+            <span class="subtitle">Manage all client requests</span>
+        </div>
+
+        <!-- REQUEST LIST -->
+        <div class="card">
+
+            {% for req in requests %}
+                <div class="request-row">
+
+                    <div class="request-info">
+                        <p class="client-name">
+                            Client: {{ req.client.username }}
+                        </p>
+                        <p class="issue">
+                            Issue: {{ req.category }}
+                        </p>
+                        <small class="time">
+                            {{ req.created_at|date:"d M Y, h:i A" }}
+                        </small>
+                    </div>
+
+                    <div class="status">
+                        <span class="badge {{ req.status }}">
+                            {{ req.status|title }}
+                        </span>
+                    </div>
+
+                    <div class="actions">
+                        {% if req.status == "pending" %}
+                            <a href="{% url 'request-action' req.id 'accept' %}" class="btn accept">Accept</a>
+                            <a href="{% url 'request-action' req.id 'reject' %}" class="btn reject">Reject</a>
+                        {% elif req.status == "accepted" %}
+                            <span class="btn active">In Progress</span>
+                        {% elif req.status == "completed" %}
+                            <span class="btn completed">Completed</span>
+                        {% else %}
+                            <span class="btn rejected">Rejected</span>
+                        {% endif %}
+                    </div>
+
+                </div>
+            {% empty %}
+                <p style="text-align:center;">No consultation requests found.</p>
+            {% endfor %}
+
+        </div>
+
+    </main>
+</div>
+
+</body>
+</html>

@@ -2,24 +2,20 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>SALLAH – Signup</title>
-<link rel="stylesheet" href="{% static 'accounts/css/style.css' %}">
+    <meta charset="UTF-8">
+    <title>SALLAH – Login</title>
+    <link rel="stylesheet" href="{% static 'accounts/css/style.css' %}">
 </head>
 <body>
 
 <div class="card">
     <div class="brand">
         <h1>SALLAH</h1>
-        <span>Create Account</span>
+        <p>Login as {{ role|title }}</p>
     </div>
 
     <form method="POST">
         {% csrf_token %}
-        <input type="hidden" name="role" value="{{ role }}">
-
-        <label>Full Name</label>
-        <input type="text" name="name" required>
 
         <label>Email</label>
         <input type="email" name="email" required>
@@ -27,13 +23,17 @@
         <label>Password</label>
         <input type="password" name="password" required>
 
-        <button>Create Account</button>
+        <button type="submit">Login</button>
 
         <div class="toggle">
-            Already have account?
-            <a href="{% url 'login' %}?role={{ role }}">Login</a>
+            New user?
+            <a href="{% url 'signup' %}?role={{ role }}">Create account</a>
         </div>
     </form>
+
+    <div class="footer">
+        © 2026 SALLAH · Secure & Confidential
+    </div>
 </div>
 
 </body>

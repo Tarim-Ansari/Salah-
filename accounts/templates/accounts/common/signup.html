@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SALLAH – Create Account</title>
+    <link rel="stylesheet" href="{% static 'accounts/css/style.css' %}">
+</head>
+<body>
+
+<div class="card">
+    <div class="brand">
+        <h1>SALLAH</h1>
+        <p>Justice • Trust • Transparency</p>
+    </div>
+
+    <a href="{% url 'role' %}" class="back-link">← Back</a>
+
+    <h2>Create Account</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="role" value="{{ role }}">
+
+        <!-- COMMON FIELDS -->
+        <label>Full Name</label>
+        <input type="text" name="name" required>
+
+        <label>Email</label>
+        <input type="email" name="email" required>
+
+        <label>Password</label>
+        <input type="password" name="password" required>
+
+        <!-- LAWYER-ONLY FIELDS -->
+        {% if role == "lawyer" %}
+            <label>Law Degree</label>
+            <input type="text" name="law_degree" required>
+
+            <label>Bar Council ID</label>
+            <input type="text" name="bar_id" required>
+
+            <label>Specialization</label>
+
+            <div class="checkbox-grid">
+                <label><input type="checkbox" name="specialization" value="criminal"> Criminal</label>
+                <label><input type="checkbox" name="specialization" value="civil"> Civil</label>
+                <label><input type="checkbox" name="specialization" value="corporate"> Corporate</label>
+                <label><input type="checkbox" name="specialization" value="family"> Family</label>
+                <label><input type="checkbox" name="specialization" value="cyber"> Cyber</label>
+                <label><input type="checkbox" name="specialization" value="tax"> Tax</label>
+            </div>
+        {% endif %}
+
+        <button type="submit">Create Account</button>
+
+        <div class="toggle">
+            Already have an account?
+            <a href="{% url 'login' %}?role={{ role }}">Login</a>
+        </div>
+    </form>
+
+    <p class="footer">© 2026 SALLAH • Secure & Confidential</p>
+</div>
+
+</body>
+</html>

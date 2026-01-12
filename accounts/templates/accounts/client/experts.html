@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Legal Experts | SALLAH</title>
+    <link rel="stylesheet" href="{% static 'accounts/css/style.css' %}">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="logo">⚖ SALLAH</div>
+    <nav>
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'services' %}">Practice Areas</a>
+        <a href="{% url 'logout' %}">Logout</a>
+    </nav>
+</header>
+
+<section class="experts-section">
+    <h1>Available Legal Experts</h1>
+
+    {% if selected_category %}
+        <p>Category: <strong>{{ selected_category|title }}</strong></p>
+    {% endif %}
+
+    <div class="experts-grid">
+
+        {% for lawyer in lawyers %}
+        <div class="expert-card">
+            <h3>{{ lawyer.user.username }}</h3>
+
+            <p class="speciality">
+                {% for s in lawyer.specialization.all %}
+                    {{ s.name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+
+            <p>Experience: {{ lawyer.experience_years }} yrs</p>
+            <p>Rating: ⭐ {{ lawyer.rating }}</p>
+
+            <a href="#" class="consult-btn">Request Consultation</a>
+        </div>
+        {% empty %}
+        <p>No lawyers available.</p>
+        {% endfor %}
+
+    </div>
+</section>
+
+</body>
+</html>
