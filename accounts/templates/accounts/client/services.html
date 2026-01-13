@@ -3,13 +3,147 @@
 <html>
 <head>
     <title>Our Services | SALLAH</title>
-    <link rel="stylesheet" href="{% static 'accounts/css/style.css' %}">
+
+    <style>
+        /* ===== Base ===== */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: radial-gradient(circle at top, #1a1a1a 0%, #000 55%);
+            color: #eaeaea;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* ===== Navbar ===== */
+        .navbar {
+            padding: 20px 50px;
+            border-bottom: 1px solid #1f1f1f;
+        }
+
+        .nav-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: #d89c3a;
+        }
+
+        nav a {
+            margin-left: 28px;
+            font-size: 15px;
+            color: #ccc;
+        }
+
+        nav a:hover {
+            color: #d89c3a;
+        }
+
+        .btn.small {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: #d89c3a;
+            color: #000;
+            font-weight: 600;
+        }
+
+        /* ===== Section Layout ===== */
+        .services-section {
+            padding: 80px 60px;
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        /* ===== Left Content ===== */
+        .services-left h1 {
+            font-size: 54px;
+            line-height: 1.15;
+            margin-bottom: 25px;
+            color: #fff;
+        }
+
+        .services-left p {
+            font-size: 16px;
+            color: #bdbdbd;
+            max-width: 480px;
+            margin-bottom: 35px;
+            line-height: 1.6;
+        }
+
+        .btn.primary {
+            display: inline-block;
+            padding: 14px 28px;
+            border-radius: 30px;
+            background: #d89c3a;
+            color: #000;
+            font-weight: 700;
+        }
+
+        /* ===== Services Grid ===== */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 28px;
+        }
+
+        /* ===== Service Card ===== */
+        .service-card {
+            background: linear-gradient(180deg, #111, #0b0b0b);
+            border: 1px solid #2a2a2a;
+            border-radius: 18px;
+            padding: 28px;
+            min-height: 170px;
+            transition: transform 0.35s, border 0.35s;
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+            border-color: #d89c3a;
+        }
+
+        .service-card h3 {
+            margin: 0 0 12px;
+            font-size: 20px;
+            color: #fff;
+        }
+
+        .service-card p {
+            font-size: 14px;
+            color: #b5b5b5;
+            line-height: 1.6;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 1000px) {
+            .services-section {
+                grid-template-columns: 1fr;
+            }
+
+            .services-left h1 {
+                font-size: 42px;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
 <header class="navbar">
     <div class="nav-inner">
-        <div class="logo">⚖ SALLAH</div>
+        <div class="logo">⚖ SALAH</div>
         <nav>
             <a href="{% url 'home' %}">Home</a>
             <a href="{% url 'services' %}">Services</a>
@@ -25,39 +159,41 @@
 </header>
 
 <section class="services-section">
+
     <div class="services-left">
-        <h1>Expert Legal Help<br>Across Multiple Domains</h1>
+        <h1>We are fight any<br>violence with of<br>experience.</h1>
         <p>
-            Choose your legal issue and get connected instantly with
-            verified advocates and law professionals.
+            Our experienced team of legal professionals provides comprehensive
+            legal services across multiple practice areas, delivering results
+            with confidence and care.
         </p>
-        <a href="{% url 'experts' %}" class="btn primary">View Experts</a>
+        <a href="{% url 'experts' %}" class="btn primary">More Services →</a>
     </div>
 
     <div class="services-grid">
 
         <a href="{% url 'experts' %}?category=family" class="service-card">
             <h3>Family Law</h3>
-            <p>Divorce, custody, domestic disputes, maintenance.</p>
+            <p>Divorce, custody, adoption, and family dispute resolution.</p>
         </a>
-      
+
         <a href="{% url 'experts' %}?category=civil" class="service-card">
             <h3>Civil Law</h3>
-            <p>Property disputes, contracts, recovery cases.</p>
+            <p>Contract disputes, property rights, and personal claims.</p>
         </a>
-      
+
         <a href="{% url 'experts' %}?category=criminal" class="service-card">
             <h3>Criminal Law</h3>
-            <p>FIR, bail, arrest, criminal defense.</p>
+            <p>Strong defense strategies for criminal charges and bail.</p>
         </a>
-      
+
         <a href="{% url 'experts' %}?category=corporate" class="service-card">
-            <h3>Corporate Law</h3>
-            <p>Company law, compliance, startups.</p>
+            <h3>Business Law</h3>
+            <p>Corporate formation, mergers, compliance, and litigation.</p>
         </a>
-      
-      </div>
-      
+
+    </div>
+
 </section>
 
 </body>

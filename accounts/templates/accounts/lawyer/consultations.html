@@ -2,91 +2,214 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Consultations | SALLAH</title>
-    <link rel="stylesheet" href="{% static 'accounts/css/dashboard.css' %}">
+    <title>SALAH | Client Home</title>
+
+    <style>
+        /* ===== RESET ===== */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: radial-gradient(circle at top, #1a1a1a 0%, #000 55%);
+            color: #eaeaea;
+        }
+
+        /* ===== TOP BAR ===== */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            border-bottom: 1px solid #1f1f1f;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: #d89c3a;
+        }
+
+        .welcome {
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        /* ===== MAIN ===== */
+        .container {
+            padding: 35px 40px;
+        }
+
+        /* ===== SEARCH ===== */
+        .search-box input {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 14px;
+            border: none;
+            outline: none;
+            background: #fff;
+            font-size: 14px;
+        }
+
+        /* ===== CATEGORY GRID ===== */
+        .categories {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .category-card {
+            background: linear-gradient(180deg, #111, #0b0b0b);
+            border: 1px solid #2a2a2a;
+            border-radius: 16px;
+            padding: 26px;
+            text-align: center;
+            transition: transform 0.3s, border 0.3s;
+        }
+
+        .category-card:hover {
+            transform: translateY(-6px);
+            border-color: #d89c3a;
+        }
+
+        .category-card h3 {
+            margin: 10px 0 6px;
+            color: #fff;
+            font-size: 18px;
+        }
+
+        .category-card p {
+            font-size: 13px;
+            color: #aaa;
+        }
+
+        /* ===== REQUESTS ===== */
+        .requests {
+            margin-top: 45px;
+            background: linear-gradient(180deg, #111, #0b0b0b);
+            border: 1px solid #2a2a2a;
+            border-radius: 18px;
+            padding: 26px;
+        }
+
+        .requests h3 {
+            margin-top: 0;
+            color: #d89c3a;
+            margin-bottom: 18px;
+        }
+
+        .request-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid #222;
+        }
+
+        .request-row:last-child {
+            border-bottom: none;
+        }
+
+        .request-name {
+            font-size: 14px;
+        }
+
+        /* ===== STATUS BADGES ===== */
+        .badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .pending {
+            background: #f39c12;
+            color: #000;
+        }
+
+        .accepted {
+            background: #2ecc71;
+            color: #000;
+        }
+
+        .rejected {
+            background: #e74c3c;
+            color: #fff;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 900px) {
+            .categories {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-<div class="layout">
+<!-- TOP BAR -->
+<div class="topbar">
+    <div class="logo">SALLAH</div>
+    <div class="welcome">Welcome, Client</div>
+</div>
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <h2 class="logo">SALLAH</h2>
-        <ul>
-            <li>
-                <a href="{% url 'lawyer_dashboard' %}">Dashboard</a>
-            </li>
-            <li class="active">
-                Consultations
-            </li>
-            <li>
-                <a href="#">Earnings</a>
-            </li>
-            <li>
-                <a href="#">Profile</a>
-            </li>
-            <li>
-                <a href="#">Settings</a>
-            </li>
-        </ul>
+<!-- MAIN CONTENT -->
+<div class="container">
 
-        <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
-    </aside>
+    <!-- SEARCH -->
+    <!-- <div class="search-box">
+        <input type="text" placeholder="Search lawyer by problem or location...">
+    </div> -->
 
-    <!-- MAIN CONTENT -->
-    <main class="content">
-
-        <!-- HEADER -->
-        <div class="header">
-            <h1>Consultation Requests</h1>
-            <span class="subtitle">Manage all client requests</span>
+    <!-- CATEGORIES -->
+    <div class="categories">
+        <div class="category-card">
+            <h3>Family Law</h3>
+            <p>Divorce, custody</p>
         </div>
 
-        <!-- REQUEST LIST -->
-        <div class="card">
-
-            {% for req in requests %}
-                <div class="request-row">
-
-                    <div class="request-info">
-                        <p class="client-name">
-                            Client: {{ req.client.username }}
-                        </p>
-                        <p class="issue">
-                            Issue: {{ req.category }}
-                        </p>
-                        <small class="time">
-                            {{ req.created_at|date:"d M Y, h:i A" }}
-                        </small>
-                    </div>
-
-                    <div class="status">
-                        <span class="badge {{ req.status }}">
-                            {{ req.status|title }}
-                        </span>
-                    </div>
-
-                    <div class="actions">
-                        {% if req.status == "pending" %}
-                            <a href="{% url 'request-action' req.id 'accept' %}" class="btn accept">Accept</a>
-                            <a href="{% url 'request-action' req.id 'reject' %}" class="btn reject">Reject</a>
-                        {% elif req.status == "accepted" %}
-                            <span class="btn active">In Progress</span>
-                        {% elif req.status == "completed" %}
-                            <span class="btn completed">Completed</span>
-                        {% else %}
-                            <span class="btn rejected">Rejected</span>
-                        {% endif %}
-                    </div>
-
-                </div>
-            {% empty %}
-                <p style="text-align:center;">No consultation requests found.</p>
-            {% endfor %}
-
+        <div class="category-card">
+            <h3>Criminal</h3>
+            <p>Bail, FIR</p>
         </div>
 
-    </main>
+        <div class="category-card">
+            <h3>Corporate</h3>
+            <p>Company cases</p>
+        </div>
+
+        <div class="category-card">
+            <h3>Cyber Law</h3>
+            <p>Online fraud</p>
+        </div>
+    </div>
+
+    <!-- MY REQUESTS -->
+    <div class="requests">
+        <h3>My Requests</h3>
+
+        {% for r in requests %}
+        <div class="request-row">
+            <div>
+                <strong>{{ r.client.get_full_name }}</strong><br>
+                {{ r.subject }}<br>
+                <small>{{ r.created_at }}</small>
+            </div>
+
+            <span class="status {{ r.status }}">
+                {{ r.status|title }}
+            </span>
+        </div>
+        {% empty %}
+        <p class="muted">No incoming requests</p>
+        {% endfor %}
+
+    </div>
+
 </div>
 
 </body>

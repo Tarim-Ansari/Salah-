@@ -13,7 +13,16 @@ urlpatterns = [
     path("services/", views.services, name="services"),
     path("experts/", views.experts, name="experts"),
     path("logout/", views.logout_view, name="logout"),
-
+    path(
+        "request-consultation/<int:lawyer_id>/",
+        views.request_consultation,
+        name="request_consultation",
+    ),
+    path(
+        "lawyer/consultations/",
+        views.lawyer_consultations,
+        name="lawyer_consultations",
+    ),
 
 
 

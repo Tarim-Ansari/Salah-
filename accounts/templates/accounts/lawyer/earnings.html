@@ -1,10 +1,119 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Earnings | SALLAH</title>
+    <meta charset="UTF-8">
+    <title>Earnings | SALAH</title>
     <link rel="stylesheet" href="{% static 'accounts/css/dashboard.css' %}">
 </head>
+<style>
+    /* ===== GLOBAL ===== */
+    body {
+        margin: 0;
+        font-family: Inter, system-ui, sans-serif;
+        background: #0b0b0b;
+        color: #fff;
+    }
+
+    /* ===== LAYOUT ===== */
+    .layout {
+        display: flex;
+        min-height: 100vh;
+    }
+
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+        width: 240px;
+        background: #0f0f0f;
+        padding: 30px 20px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .logo {
+        color: #d4a13a;
+        font-size: 22px;
+        font-weight: 800;
+        margin-bottom: 30px;
+    }
+
+    .sidebar ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .sidebar ul li a {
+        display: block;
+        padding: 12px 16px;
+        margin-bottom: 8px;
+        border-radius: 10px;
+        color: #ccc;
+        text-decoration: none;
+    }
+
+    .sidebar ul li.active a,
+    .sidebar ul li a:hover {
+        background: #d4a13a;
+        color: #000;
+        font-weight: 600;
+    }
+
+    .logout-btn {
+        margin-top: auto;
+        background: #c0392b;
+        color: #fff;
+        text-align: center;
+        padding: 12px;
+        border-radius: 10px;
+        text-decoration: none;
+    }
+
+    /* ===== MAIN ===== */
+    .content {
+        flex: 1;
+        padding: 40px;
+    }
+
+    /* ===== STATS ===== */
+    .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        margin-bottom: 40px;
+    }
+
+    .stat-box {
+        background: linear-gradient(180deg, #111, #0b0b0b);
+        border: 1px solid rgba(212,161,58,0.3);
+        border-radius: 16px;
+        padding: 26px;
+        text-align: center;
+    }
+
+    .stat-box h2 {
+        color: #d4a13a;
+        font-size: 28px;
+    }
+
+    /* ===== CARD ===== */
+    .card {
+        background: linear-gradient(180deg, #111, #0b0b0b);
+        border-radius: 16px;
+        padding: 24px;
+    }
+
+    .request-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 14px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .muted {
+        color: #888;
+    }
+
+</style>
 <body>
 
 <div class="layout">
@@ -31,7 +140,7 @@
             <h1>Earnings</h1>
         </div>
 
-        <!-- WALLET -->
+        <!-- STATS -->
         <div class="stats">
             <div class="stat-box">
                 <h2>₹{{ wallet.balance }}</h2>
@@ -55,13 +164,11 @@
 
             {% for t in transactions %}
                 <div class="request-row">
-                    <p>
-                        Client: {{ t.client }} · ₹{{ t.amount }}
-                    </p>
+                    <p>Client: {{ t.client }} · ₹{{ t.amount }}</p>
                     <small>{{ t.date }}</small>
                 </div>
             {% empty %}
-                <p>No transactions yet</p>
+                <p class="muted">No transactions yet</p>
             {% endfor %}
         </div>
 

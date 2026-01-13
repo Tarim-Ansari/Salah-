@@ -1,10 +1,11 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
-from .models import User, LawyerProfile, Wallet
+from .models import User, LawyerProfile, Wallet , ConsultationRequest
 
+User = get_user_model()
 
 # =========================
 # ROLE SELECTION
@@ -19,49 +20,44 @@ def role_select(request):
 def signup_view(request):
     role = request.GET.get("role")
 
-    if role not in ["client", "lawyer"]:
-        return redirect("role")
-
     if request.method == "POST":
-        email = request.POST.get("email")
+        role = request.POST.get("role")
+        full_name = request.POST.get("name").strip()
+        email = request.POST.get("email").lower().strip()
         password = request.POST.get("password")
-        name = request.POST.get("name")
 
+        # 🔒 Split full name safely
+        name_parts = full_name.split(" ", 1)
+        first_name = name_parts[0]
+        last_name = name_parts[1] if len(name_parts) > 1 else ""
+        # ❗ Prevent duplicate email / username
         if User.objects.filter(username=email).exists():
-            messages.error(request, "User already exists")
-            return redirect(request.path + f"?role={role}")
+            messages.error(request, "Email already registered. Please login.")
+            return redirect(f"/signup/?role={role}")
 
+        # ✅ Create user
         user = User.objects.create_user(
-            username=email,
-            email=email,
-            password=password,
+            username=request.POST["email"],   # keep email as username (good practice)
+            email=request.POST["email"],
+            password=request.POST["password"],
+            first_name=first_name,
+            last_name=last_name,
             role=role,
         )
 
-        # Wallet for both
-        Wallet.objects.create(user=user)
-
-        # Extra fields only for lawyer
+        # ✅ Lawyer-specific profile
         if role == "lawyer":
             LawyerProfile.objects.create(
                 user=user,
-                bar_council_id=request.POST.get("bar_id", ""),
-                experience_years=request.POST.get("experience", 0),
+                experience_years=0,
+                bar_council_id=request.POST.get("bar_id") or None,
                 is_available=True,
             )
 
-        login(request, user)
+        messages.success(request, "Account created successfully. Please login.")
+        return redirect(f"/login/?role={role}")
 
-        return redirect(
-            "lawyer_dashboard" if role == "lawyer" else "home"
-        )
-
-    return render(
-        request,
-        "accounts/common/signup.html",
-        {"role": role}
-    )
-
+    return render(request, "accounts/common/signup.html", {"role": role})
 
 # =========================
 # LOGIN
@@ -185,8 +181,58 @@ def lawyer_earnings(request):
 @login_required
 def lawyer_profile(request):
     profile = LawyerProfile.objects.get(user=request.user)
+
+    if request.method == "POST":
+        if request.FILES.get("profile_photo"):
+            profile.profile_photo = request.FILES["profile_photo"]
+
+        profile.experience_years = request.POST.get("experience_years", 0)
+        profile.save()
+
+        return redirect("lawyer_profile")
+
+    return render(request, "accounts/lawyer/profile.html", {
+        "profile": profile
+    })
+
+@login_required
+def request_consultation(request, lawyer_id):
+    lawyer_profile = get_object_or_404(LawyerProfile, id=lawyer_id)
+
+    if request.method == "POST":
+        subject = request.POST.get("subject")
+        category_name = request.POST.get("category")
+        description = request.POST.get("description")
+
+        category_obj = get_object_or_404(
+            ServiceCategory,
+            name__iexact=category_name
+        )
+
+        ConsultationRequest.objects.create(
+            client=request.user,
+            lawyer=lawyer_profile.user,  # ✅ FIX HERE
+            subject=subject,
+            category=category_obj,
+            description=description,
+        )
+
+        return redirect("client_dashboard")
+
+    return render(request, "accounts/client/case_brief.html", {
+        "lawyer": lawyer_profile
+    })
+
+
+@login_required
+def lawyer_consultations(request):
+    requests = ConsultationRequest.objects.filter(
+        lawyer=request.user
+    ).order_by("-created_at")
+
     return render(
         request,
-        "accounts/lawyer/profile.html",
-        {"profile": profile}
+        "accounts/lawyer/consultations.html",
+        {"requests": requests},
     )
+

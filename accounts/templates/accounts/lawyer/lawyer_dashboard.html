@@ -4,23 +4,250 @@
 <head>
     <meta charset="UTF-8">
     <title>Lawyer Dashboard | SALLAH</title>
-    <link rel="stylesheet" href="{% static 'accounts/css/lawyer_dashboard.css' %}">
+
+    <style>
+        /* ===== RESET ===== */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: radial-gradient(circle at top, #1a1a1a 0%, #000 55%);
+            color: #eaeaea;
+        }
+
+        /* ===== DASHBOARD LAYOUT ===== */
+        .dashboard {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 240px;
+            background: #0f0f0f;
+            border-right: 1px solid #1f1f1f;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .brand {
+            font-size: 22px;
+            font-weight: 700;
+            color: #d89c3a;
+            margin-bottom: 40px;
+        }
+
+        .sidebar nav a {
+            display: block;
+            padding: 12px 16px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            color: #ccc;
+            font-size: 15px;
+        }
+
+        .sidebar nav a.active,
+        .sidebar nav a:hover {
+            background: #d89c3a;
+            color: #000;
+            font-weight: 600;
+        }
+
+        .logout {
+            background: #c0392b;
+            color: #fff;
+            text-align: center;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        /* ===== MAIN ===== */
+        .main {
+            flex: 1;
+            padding: 40px 50px;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 30px;
+        }
+
+        .status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .online {
+            background: #1abc9c;
+            color: #000;
+        }
+
+        /* ===== PROFILE CARD ===== */
+        .profile-card {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: linear-gradient(180deg, #111, #0b0b0b);
+            border: 1px solid #2a2a2a;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+        }
+
+        .avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: #2a2a2a;
+        }
+
+        .profile-card h3 {
+            margin: 0;
+            font-size: 20px;
+            color: #fff;
+        }
+
+        .profile-card p {
+            margin: 4px 0;
+            font-size: 14px;
+            color: #bdbdbd;
+        }
+
+        .muted {
+            color: #888;
+            font-size: 13px;
+        }
+
+        /* ===== STATS ===== */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-bottom: 35px;
+        }
+
+        .stat-card {
+            background: linear-gradient(180deg, #111, #0b0b0b);
+            border: 1px solid #2a2a2a;
+            border-radius: 16px;
+            padding: 22px;
+            text-align: center;
+        }
+
+        .stat-card h2 {
+            margin: 0;
+            font-size: 26px;
+            color: #d89c3a;
+        }
+
+        .stat-card span {
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        /* ===== REQUESTS ===== */
+        .requests {
+            background: linear-gradient(180deg, #111, #0b0b0b);
+            border: 1px solid #2a2a2a;
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .requests h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .request-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid #222;
+        }
+
+        .request-row:last-child {
+            border-bottom: none;
+        }
+
+        .actions button {
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-left: 8px;
+        }
+
+        .accept {
+            background: #2ecc71;
+            color: #000;
+        }
+
+        .reject {
+            background: #e74c3c;
+            color: #fff;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 900px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                flex-direction: row;
+                align-items: center;
+            }
+
+        }
+        .avatar img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+    </style>
 </head>
+
 <body>
 
 <div class="dashboard">
 
     <!-- SIDEBAR -->
     <aside class="sidebar">
-        <div class="brand">⚖ SALLAH</div>
-
-        <nav>
-            <a class="active">Dashboard</a>
-            <a href="{% url 'lawyer_consultations' %}">Consultations</a>
-            <a href="{% url 'lawyer_earnings' %}">Earnings</a>
-            <a href="{% url 'lawyer_profile' %}">Profile</a>
-            <a href="#">Settings</a>
-        </nav>
+        <div>
+            <div class="brand">⚖ SALAH</div>
+            <nav>
+                <a class="active">Dashboard</a>
+                <a href="{% url 'lawyer_consultations' %}">Consultations</a>
+                <a href="{% url 'lawyer_earnings' %}">Earnings</a>
+                <a href="{% url 'lawyer_profile' %}">Profile</a>
+                <a href="#">Settings</a>
+            </nav>
+        </div>
 
         <a href="{% url 'logout' %}" class="logout">Logout</a>
     </aside>
@@ -28,26 +255,29 @@
     <!-- MAIN -->
     <main class="main">
 
-        <!-- HEADER -->
         <header class="header">
-            <h1>Welcome, Advocate</h1>
+            <h1>
+                Welcome,
+                {% if request.user.get_full_name %}
+                    {{ request.user.get_full_name }}
+                {% else %}
+                    Advocate
+                {% endif %}
+            </h1>
+            
             <span class="status online">Online</span>
         </header>
 
-        <!-- PROFILE CARD -->
         <section class="profile-card">
-            <div class="avatar"></div>
-            <div>
-                <h3>{{ request.user.get_full_name|default:"Advocate" }}</h3>
-                <p>{{ request.user.email }}</p>
-                <p class="muted">
-                    Experience: {{ profile.experience|default:"0" }} years |
-                    Bar ID: {{ profile.bar_council_id|default:"-" }}
-                </p>
-            </div>
+            <div class="avatar">
+                {% if profile.profile_photo %}
+                    <img src="{{ profile.profile_photo.url }}" alt="Profile Photo">
+                {% else %}
+                    <span>{{ request.user.first_name|slice:":1" }}</span>
+                {% endif %}
+            </div>            
         </section>
 
-        <!-- STATS -->
         <section class="stats">
             <div class="stat-card">
                 <h2>₹{{ todays_earnings|default:"0" }}</h2>
@@ -65,7 +295,6 @@
             </div>
         </section>
 
-        <!-- REQUESTS -->
         <section class="requests">
             <h3>Incoming Requests</h3>
 
@@ -83,3 +312,9 @@
                 <p class="muted">No incoming requests</p>
             {% endif %}
         </section>
+
+    </main>
+</div>
+
+</body>
+</html>

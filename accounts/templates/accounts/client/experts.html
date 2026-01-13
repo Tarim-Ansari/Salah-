@@ -3,12 +3,148 @@
 <html>
 <head>
     <title>Legal Experts | SALLAH</title>
-    <link rel="stylesheet" href="{% static 'accounts/css/style.css' %}">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #0b0b0b;
+            color: #eaeaea;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 40px;
+            background: #0f0f0f;
+            border-bottom: 1px solid #1f1f1f;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+            color: #d89c3a;
+        }
+
+        .navbar nav a {
+            margin-left: 25px;
+            color: #ccc;
+            font-size: 15px;
+        }
+
+        .navbar nav a:hover {
+            color: #d89c3a;
+        }
+
+        .experts-section {
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        .experts-section h1 {
+            font-size: 38px;
+            margin-bottom: 40px;
+        }
+
+        .experts-section p {
+            color: #aaa;
+            margin-bottom: 30px;
+        }
+
+        .experts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 30px;
+        }
+
+        .expert-card {
+            background: #111;
+            border: 1px solid #2a2a2a;
+            border-radius: 14px;
+            padding: 22px;
+            text-align: left;
+            transition: transform 0.3s, border 0.3s;
+        }
+
+        .expert-card:hover {
+            transform: translateY(-6px);
+            border-color: #d89c3a;
+        }
+
+        .expert-card h3 {
+            margin: 0 0 8px;
+            font-size: 20px;
+            color: #fff;
+        }
+
+        .speciality {
+            color: #d89c3a;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .expert-card p {
+            font-size: 14px;
+            margin: 6px 0;
+            color: #ccc;
+        }
+
+        .consult-btn {
+            display: block;
+            margin-top: 18px;
+            text-align: center;
+            padding: 12px;
+            background: #d89c3a;
+            color: #000;
+            font-weight: bold;
+            border-radius: 10px;
+            transition: background 0.3s;
+        }
+
+        .consult-btn:hover {
+            background: #c2872f;
+        }
+        /* =========================
+        EXPERT CARD AVATAR
+        ========================= */
+        .expert-avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+            margin-bottom: 14px;
+            border: 2px solid rgba(216, 156, 58, 0.6);
+            background: #1a1a1a;
+        }
+
+        /* Center avatar inside card */
+        .expert-card {
+            text-align: left;
+        }
+
+        .expert-card img.expert-avatar {
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .expert-card:hover .expert-avatar {
+        box-shadow: 0 0 18px rgba(216, 156, 58, 0.35);
+        transition: 0.3s ease;
+        }
+
+    </style>
 </head>
+
 <body>
 
 <header class="navbar">
-    <div class="logo">⚖ SALLAH</div>
+    <div class="logo">⚖ SALAH</div>
     <nav>
         <a href="{% url 'home' %}">Home</a>
         <a href="{% url 'services' %}">Practice Areas</a>
@@ -27,7 +163,26 @@
 
         {% for lawyer in lawyers %}
         <div class="expert-card">
-            <h3>{{ lawyer.user.username }}</h3>
+
+            <div class="expert-card">
+
+                {% if lawyer.profile_photo %}
+                    <img src="{{ lawyer.profile_photo.url }}" class="expert-avatar" alt="Lawyer photo">
+                {% else %}
+                    <img src="{% static 'accounts/images/default-avatar.png' %}" class="expert-avatar" alt="Default avatar">
+                {% endif %}
+            
+                <h3>{{ lawyer.user.get_full_name|default:lawyer.user.email }}</h3>
+            
+            </div>
+            
+
+<!-- <h3>{{ lawyer.user.get_full_name|default:lawyer.user.email }}</h3> -->
+
+
+            <!-- ✅ FULL NAME FIXED -->
+
+            
 
             <p class="speciality">
                 {% for s in lawyer.specialization.all %}
@@ -38,7 +193,10 @@
             <p>Experience: {{ lawyer.experience_years }} yrs</p>
             <p>Rating: ⭐ {{ lawyer.rating }}</p>
 
-            <a href="#" class="consult-btn">Request Consultation</a>
+            <a href="{% url 'request_consultation' lawyer.id %}"
+                class="consult-btn">
+                Request Consultation
+            </a>
         </div>
         {% empty %}
         <p>No lawyers available.</p>
@@ -49,3 +207,5 @@
 
 </body>
 </html>
+
+
