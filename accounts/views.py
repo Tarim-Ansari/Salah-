@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
-from .models import User, LawyerProfile, Wallet , ConsultationRequest
+from .models import User, LawyerProfile, Wallet , ConsultationRequest , ServiceCategory
 
 User = get_user_model()
 
@@ -198,30 +198,36 @@ def lawyer_profile(request):
 @login_required
 def request_consultation(request, lawyer_id):
     lawyer_profile = get_object_or_404(LawyerProfile, id=lawyer_id)
+    lawyer_user = lawyer_profile.user
+
+    categories = ServiceCategory.objects.all()
 
     if request.method == "POST":
+        category_id = request.POST.get("category")
         subject = request.POST.get("subject")
-        category_name = request.POST.get("category")
         description = request.POST.get("description")
 
-        category_obj = get_object_or_404(
-            ServiceCategory,
-            name__iexact=category_name
-        )
+        category = get_object_or_404(ServiceCategory, id=category_id)
 
         ConsultationRequest.objects.create(
             client=request.user,
-            lawyer=lawyer_profile.user,  # ✅ FIX HERE
+            lawyer=lawyer_user,        # ✅ User, not LawyerProfile
+            category=category,         # ✅ ServiceCategory instance
             subject=subject,
-            category=category_obj,
-            description=description,
+            description=description
         )
 
-        return redirect("client_dashboard")
+        return redirect("home")
 
-    return render(request, "accounts/client/case_brief.html", {
-        "lawyer": lawyer_profile
-    })
+    return render(
+        request,
+        "accounts/client/case_brief.html",
+        {
+            "lawyer": lawyer_profile,
+            "categories": categories,
+        }
+    )
+
 
 
 @login_required

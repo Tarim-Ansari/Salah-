@@ -55,32 +55,24 @@ class LawyerProfile(models.Model):
 # Consultation Request
 # --------------------
 class ConsultationRequest(models.Model):
-    STATUS_CHOICES = [
-        ("pending", "Pending"),
-        ("accepted", "Accepted"),
-        ("rejected", "Rejected"),
-    ]
-
     client = models.ForeignKey(User, on_delete=models.CASCADE, related_name="client_requests")
     lawyer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="lawyer_requests")
 
     category = models.ForeignKey(
         ServiceCategory,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True
+        on_delete=models.CASCADE
     )
 
-    subject = models.CharField(max_length=255)
+    subject = models.CharField(max_length=200)
     description = models.TextField()
-
     status = models.CharField(
         max_length=20,
-        choices=STATUS_CHOICES,
+        choices=[("pending", "Pending"), ("accepted", "Accepted"), ("rejected", "Rejected")],
         default="pending"
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
+
 
 
 

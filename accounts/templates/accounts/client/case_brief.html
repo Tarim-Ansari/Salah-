@@ -100,34 +100,26 @@
         Provide details so <b>{{ lawyer.get_full_name }}</b> can review your case
     </p>
 
-    <form method="POST" enctype="multipart/form-data">
+    <form method="POST">
         {% csrf_token %}
-
+    
         <label>Case Category</label>
-        <input type="text" name="category" required>
-
-        <label>Case Subject</label>
+        <select name="category" required>
+            <option value="">Select category</option>
+            {% for c in categories %}
+                <option value="{{ c.id }}">{{ c.name }}</option>
+            {% endfor %}
+        </select>
+    
+        <label>Subject</label>
         <input type="text" name="subject" required>
-
-        <label>When did the issue start?</label>
-        <input type="date" name="issue_date" required>
-
-        <label>Opposing Party</label>
-        <input type="text" name="opposing_party">
-
-        <label>Desired Outcome</label>
-        <input type="text" name="desired_outcome">
-
-        <label>Detailed Description</label>
-        <textarea name="description" rows="5" required></textarea>
-
-        <label>Upload Documents</label>
-        <input type="file" name="document">
-
-        <button type="submit" class="btn primary">
-            Submit Case Brief
-        </button>
+    
+        <label>Description</label>
+        <textarea name="description" rows="4" required></textarea>
+    
+        <button type="submit">Submit Request</button>
     </form>
+    
 </div>
 
 </body>

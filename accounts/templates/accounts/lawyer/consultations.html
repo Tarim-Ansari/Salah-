@@ -196,7 +196,7 @@
         <div class="request-row">
             <div>
                 <strong>{{ r.client.get_full_name }}</strong><br>
-                {{ r.subject }}<br>
+                {{ r.category.name }} – {{ r.subject }}<br>
                 <small>{{ r.created_at }}</small>
             </div>
 
@@ -207,6 +207,7 @@
         {% empty %}
         <p class="muted">No incoming requests</p>
         {% endfor %}
+
 
     </div>
 
