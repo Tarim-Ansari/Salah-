@@ -139,13 +139,46 @@
             background: #e74c3c;
             color: #fff;
         }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 900px) {
-            .categories {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        .actions {
+            display: flex;
+            gap: 10px;
         }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .btn.accept {
+            background: #2ecc71;
+            color: #000;
+        }
+
+        .btn.reject {
+            background: #e74c3c;
+            color: #fff;
+        }
+
+        .btn.video {
+            background: #d4a13a;
+            color: #000;
+        }
+
+        .status.rejected {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+
+
+                /* ===== RESPONSIVE ===== */
+                @media (max-width: 900px) {
+                    .categories {
+                        grid-template-columns: repeat(2, 1fr);
+                    }
+                }
     </style>
 </head>
 
@@ -196,21 +229,31 @@
         <div class="request-row">
             <div>
                 <strong>{{ r.client.get_full_name }}</strong><br>
-                {{ r.category.name }} – {{ r.subject }}<br>
-                <small>{{ r.created_at }}</small>
+                {{ r.subject }}<br>
+                <small>{{ r.created_at|date:"d M Y, H:i" }}</small>
             </div>
 
-            <span class="status {{ r.status }}">
-                {{ r.status|title }}
-            </span>
+            {% if r.status == "pending" %}
+                <div class="actions">
+                    <a href="{% url 'update_consultation_status' r.id 'accept' %}" class="btn accept">
+                        Accept
+                    </a>  
+                    <a href="{% url 'update_consultation_status' r.id 'reject' %}" class="btn reject">
+                        Reject
+                    </a>                    
+                </div>
+            {% comment %} {% elif r.status == "accepted" %}
+                <a href="/consultation/{{ r.room_id }}/?role=lawyer" class="btn video">
+                    Join Call
+                </a>
+            {% else %} {% endcomment %}
+                <span class="status rejected">Rejected</span>
+            {% endif %}
         </div>
         {% empty %}
         <p class="muted">No incoming requests</p>
         {% endfor %}
-
-
     </div>
-
 </div>
 
 </body>

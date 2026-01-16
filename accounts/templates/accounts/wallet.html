@@ -1,0 +1,81 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Wallet | SALAH</title>
+    <style>
+        body { background: #0b0b0b; color: #eaeaea; font-family: sans-serif; }
+        .container { max-width: 800px; margin: 50px auto; padding: 20px; }
+        
+        .wallet-card {
+            background: #111; border: 1px solid #333; border-radius: 12px; padding: 30px;
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 30px;
+        }
+        .balance h2 { margin: 0; color: #888; font-size: 16px; }
+        .balance h1 { margin: 10px 0 0; font-size: 42px; color: #d89c3a; }
+        
+        .add-funds-form { display: flex; gap: 10px; }
+        input[type="number"] {
+            padding: 10px; border-radius: 6px; border: 1px solid #444;
+            background: #222; color: white;
+        }
+        button {
+            background: #d89c3a; border: none; padding: 10px 20px;
+            color: black; font-weight: bold; border-radius: 6px; cursor: pointer;
+        }
+
+        .history h3 { border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
+        .txn-item {
+            display: flex; justify-content: space-between; padding: 15px;
+            border-bottom: 1px solid #222;
+        }
+        .txn-credit { color: #4ade80; } /* Green */
+        .txn-debit { color: #ef4444; }  /* Red */
+        .back-link { color: #888; text-decoration: none; display: inline-block; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <a href="{% url 'home' %}" class="back-link">← Back to Dashboard</a>
+
+    <!-- WALLET CARD -->
+    <div class="wallet-card">
+        <div class="balance">
+            <h2>Available Balance</h2>
+            <h1>₹{{ wallet.balance }}</h1>
+        </div>
+        
+        <!-- Only Clients usually add funds manually -->
+        {% if user.role == 'client' %}
+        <form action="{% url 'add_funds' %}" method="POST" class="add-funds-form">
+            {% csrf_token %}
+            <input type="number" name="amount" placeholder="Amount (₹)" required min="1">
+            <button type="submit">Add Money</button>
+        </form>
+        {% endif %}
+    </div>
+
+    <!-- HISTORY -->
+    <div class="history">
+        <h3>Transaction History</h3>
+        {% for txn in transactions %}
+        <div class="txn-item">
+            <div>
+                <div style="font-weight: bold;">{{ txn.description }}</div>
+                <div style="font-size: 12px; color: #666;">{{ txn.created_at|date:"M d, Y H:i" }}</div>
+            </div>
+            <div class="{% if txn.transaction_type == 'credit' %}txn-credit{% else %}txn-debit{% endif %}">
+                {% if txn.transaction_type == 'credit' %}+{% else %}-{% endif %}
+                ₹{{ txn.amount }}
+            </div>
+        </div>
+        {% empty %}
+        <p style="color: #666; text-align: center;">No transactions yet.</p>
+        {% endfor %}
+    </div>
+</div>
+
+</body>
+</html>

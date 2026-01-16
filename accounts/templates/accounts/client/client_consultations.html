@@ -1,0 +1,85 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Consultations | SALAH</title>
+    <link rel="stylesheet" href="{% static 'accounts/css/style.css' %}">
+</head>
+
+<style>
+.request-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+    background: linear-gradient(180deg, #111, #0b0b0b);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+}
+
+.status {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status.pending {
+    color: #d4a13a;
+    border: 1px solid rgba(212,161,58,.4);
+}
+
+.status.rejected {
+    color: #e74c3c;
+    border: 1px solid rgba(231,76,60,.4);
+}
+
+.btn.video {
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: #2ecc71;
+    color: #000;
+    font-weight: 600;
+    text-decoration: none;
+}
+</style>
+
+<body>
+
+<div class="card wide">
+    <h2>My Consultation Requests</h2>
+
+    {% for r in requests %}
+    <div class="request-row">
+        <div>
+            <strong>{{ r.client.get_full_name }}</strong><br>
+            {{ r.subject }}<br>
+            <small>{{ r.created_at }}</small>
+        </div>
+
+        {% if r.status == "pending" %}
+            <div class="actions">
+                <a href="{% url 'update_consultation_status' r.id 'accept' %}"
+                class="btn accept">Accept</a>
+
+                <a href="{% url 'update_consultation_status' r.id 'reject' %}"
+                class="btn reject">Reject</a>
+            </div>
+        {% else %}
+            <span class="status {{ r.status }}">
+                {{ r.status|title }}
+            </span>
+        {% endif %}
+    </div>
+    {% empty %}
+    <p class="muted">No consultations yet</p>
+    {% endfor %}
+
+
+
+</div>
+
+</body>
+</html>

@@ -161,13 +161,16 @@ input[disabled] {
 <div class="layout">
 
     <aside class="sidebar">
-        <h2 class="logo">⚖ SALAH</h2>
-        <ul>
-            <li><a href="{% url 'lawyer_dashboard' %}">Dashboard</a></li>
-            <li class="active"><a href="{% url 'lawyer_profile' %}">Profile</a></li>
-        </ul>
-        <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
-    </aside>
+    <h2 class="logo">⚖ SALAH</h2>
+    <ul>
+        <li><a href="{% url 'lawyer_dashboard' %}">Dashboard</a></li>
+        <li class="active"><a href="{% url 'lawyer_profile' %}">Profile</a></li>
+        
+        <!-- NEW WALLET LINK -->
+        <li><a href="{% url 'wallet' %}">My Wallet (₹{{ user.wallet.balance|default:"0" }})</a></li>
+    </ul>
+    <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+</aside>
 
     <main class="content">
 
