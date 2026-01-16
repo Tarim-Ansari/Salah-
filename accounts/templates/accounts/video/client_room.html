@@ -1,0 +1,98 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Session: {{ session_id }} | SALAH</title>
+    
+    <script src="https://unpkg.com/@daily-co/daily-js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #050505;
+            --sidebar-bg: #121212;
+            --gold-accent: #f0a500;
+            --text-main: #ffffff;
+            --text-muted: #a0a0a0;
+            --danger: #ef4444;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--bg-color); color: var(--text-main); font-family: 'Manrope', sans-serif; height: 100vh; overflow: hidden; display: flex; }
+
+        .sidebar { width: 320px; background-color: var(--sidebar-bg); border-right: 1px solid #222; display: flex; flex-direction: column; padding: 2rem; z-index: 10; }
+        .logo { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--gold-accent); margin-bottom: 2rem; }
+
+        .metric-card { background: #1a1a1a; padding: 1rem; border-radius: 8px; border-left: 3px solid var(--gold-accent); margin-bottom: 1rem; }
+        .info-label { color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .metric-large { font-size: 1.5rem; font-weight: 700; font-family: 'Playfair Display', serif; }
+
+        .feedback-box { margin-top: 1rem; padding: 1rem; background: rgba(240, 165, 0, 0.1); border: 1px dashed var(--gold-accent); border-radius: 8px; }
+        .feedback-text { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; }
+        .feedback-highlight { color: var(--text-main); font-weight: bold; }
+
+        .btn-end { width: 100%; padding: 1rem; margin-top: auto; border: 1px solid var(--danger); background: rgba(239, 68, 68, 0.1); color: var(--danger); font-weight: bold; cursor: pointer; border-radius: 8px; }
+        .btn-end:hover { background: var(--danger); color: white; }
+
+        .video-wrapper { flex: 1; background-color: #000; }
+        #video { width: 100%; height: 100%; border: none; }
+        
+        .blurred { filter: blur(8px); user-select: none; transition: filter 0.3s; }
+        .unblurred { filter: blur(0); transition: filter 0.3s; }
+        .toggle-btn { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 1rem; float: right; }
+
+        #toast { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 5px; padding: 16px; position: fixed; z-index: 50; left: 50%; bottom: 30px; transform: translateX(-50%); border-left: 4px solid var(--gold-accent); }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="logo">⚖️ SALAH</div>
+
+        <div class="metric-card">
+            <div class="info-label">Status</div>
+            <div id="status" style="font-size: 1rem; font-weight: 600;">Initializing...</div>
+        </div>
+
+        <div class="metric-card">
+            <div class="info-label">Duration</div>
+            <div id="timer" class="metric-large">00:00</div>
+        </div>
+        
+        <div class="metric-card">
+            <div class="info-label">Current Bill <button id="toggle-btn" class="toggle-btn">👁️</button></div>
+            <div id="cost-wrapper" class="metric-large blurred"><span id="cost"></span></div>
+        </div>
+
+        <div class="feedback-box">
+            <div class="info-label">Billing Feedback</div>
+            <p class="feedback-text">
+                Rate: <span class="feedback-highlight">₹<span id="display-rate">0</span>/min</span><br>
+                Total to deduct: <span class="feedback-highlight" id="deduction-amount">₹0.00</span>
+            </p>
+        </div>
+
+        <button id="end-call-btn" class="btn-end">End Consultation</button>
+    </aside>
+
+    <main class="video-wrapper">
+        <div id="video"></div>
+    </main>
+
+    <div id="toast">Alert message here</div>
+
+    <script>
+        const ROOM_URL = "{{ room_url }}"; 
+        const SESSION_ID = "{{ session_id }}"; 
+        const RATE = parseFloat("{{ rate }}");
+        const BALANCE = parseFloat("{{ balance }}");
+    </script>
+    
+    <!-- IMPORTANT: Points to CLIENT LOGIC -->
+    <script src="{% static 'accounts/js/video/client_logic.js' %}"></script>
+</body>
+</html>

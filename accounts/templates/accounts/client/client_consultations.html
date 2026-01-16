@@ -95,7 +95,7 @@
             
             <!-- GREEN JOIN BUTTON -->
             <!-- Only appears when Lawyer accepts -->
-            <a href="#" class="join-btn">
+            <a href="{% url 'join_room' req.room_id %}" class="join-btn">
                 Join Video Call
             </a>
         {% endif %}

@@ -4,6 +4,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from decimal import Decimal
 import uuid  
+import requests  
+import time      
+from django.http import HttpResponse 
+from django.conf import settings     
 
 from .models import (
     User,
@@ -233,3 +237,65 @@ def add_funds(request):
         except:
             messages.error(request, "Invalid input")
     return redirect("wallet")
+
+
+# =========================
+# VIDEO ROOM LOGIC (THE BRIDGE)
+# =========================
+# accounts/views.py
+
+# accounts/views.py
+
+@login_required
+def join_room(request, room_id):
+    # 1. Verify this room exists in our DB
+    consultation = get_object_or_404(ConsultationRequest, room_id=room_id)
+
+    # 2. Setup Daily API
+    headers = {
+        "Authorization": f"Bearer {settings.DAILY_API_KEY}",
+        "Content-Type": "application/json",
+    }
+    
+    # Create/Verify Room (Silent fail if exists is handled by logic flow)
+    try:
+        requests.post(
+            "https://api.daily.co/v1/rooms",
+            headers=headers,
+            json={
+                "name": room_id,
+                "properties": {
+                    "enable_chat": True, "start_video_off": False, "start_audio_off": False,
+                    "exp": int(time.time() + 7200) 
+                }
+            }
+        )
+    except:
+        pass # If room exists, we just proceed
+
+    daily_url = f"https://{settings.DAILY_SUBDOMAIN}.daily.co/{room_id}"
+
+    # 3. STRICT ROUTING LOGIC
+    # Check if the logged-in user is specifically the LAWYER for this case
+    if request.user == consultation.lawyer:
+        template = "accounts/video/lawyer_room.html"
+        context = {
+            "room_url": daily_url,
+            "session_id": room_id
+        }
+    
+    # Check if the logged-in user is specifically the CLIENT for this case
+    elif request.user == consultation.client:
+        template = "accounts/video/client_room.html"
+        context = {
+            "room_url": daily_url,
+            "session_id": room_id,
+            "balance": request.user.wallet.balance, 
+            "rate": 100 
+        }
+        
+    else:
+        # If user is neither (hacking attempt), kick them out
+        return redirect("home")
+
+    return render(request, template, context)

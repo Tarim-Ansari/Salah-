@@ -34,5 +34,6 @@ urlpatterns = [
     ),
     
     path("wallet/", views.wallet_view, name="wallet"),
-    path("wallet/add/", views.add_funds, name="add_funds")
+    path("wallet/add/", views.add_funds, name="add_funds"),
+    path("consultation/<str:room_id>/", views.join_room, name="join_room"),
 ]

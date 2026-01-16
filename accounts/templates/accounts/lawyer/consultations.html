@@ -43,7 +43,7 @@
                 <!-- THIS IS THE GREEN BUTTON YOU WANTED -->
                 <!-- It links to the video room using the Generated Room ID -->
                 <!-- We will hook up the actual video URL later, for now it's a placeholder -->
-                <a href="#" class="start-btn">
+                <a href="{% url 'join_room' req.room_id %}" class="start-btn">
                     Start Consultation
                 </a>
                 <div style="margin-top:5px; font-size:11px; color:#666;">ID: {{ req.room_id }}</div>
