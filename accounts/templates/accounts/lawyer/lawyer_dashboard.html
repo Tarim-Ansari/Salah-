@@ -298,18 +298,30 @@
         <section class="requests">
             <h3>Incoming Requests</h3>
 
-            {% if requests %}
-                {% for r in requests %}
+            <!-- We use 'incoming_requests' passed from the view -->
+            {% if incoming_requests %}
+                {% for req in incoming_requests %}
                 <div class="request-row">
-                    <span>{{ r.client_name }} • {{ r.issue }}</span>
+                    <div>
+                        <strong>{{ req.client.get_full_name|default:req.client.username }}</strong>
+                        <span style="color:#888; font-size:13px;"> • {{ req.subject }}</span>
+                        <div style="font-size:12px; color:#666; margin-top:4px;">{{ req.description|truncatechars:50 }}</div>
+                    </div>
+                    
                     <div class="actions">
-                        <button class="accept">Accept</button>
-                        <button class="reject">Reject</button>
+                        <!-- LINK TO VIEW LOGIC -->
+                        <a href="{% url 'update_consultation_status' req.id 'accept' %}" class="button accept" style="text-decoration:none; display:inline-block; padding:8px 16px; border-radius:8px; background:#2ecc71; color:black; font-weight:bold;">
+                            Accept
+                        </a>
+                        
+                        <a href="{% url 'update_consultation_status' req.id 'reject' %}" class="button reject" style="text-decoration:none; display:inline-block; padding:8px 16px; border-radius:8px; background:#e74c3c; color:white; font-weight:bold;">
+                            Reject
+                        </a>
                     </div>
                 </div>
                 {% endfor %}
             {% else %}
-                <p class="muted">No incoming requests</p>
+                <p class="muted">No pending requests.</p>
             {% endif %}
         </section>
 

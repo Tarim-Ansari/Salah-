@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from decimal import Decimal 
+from decimal import Decimal
+import uuid  
 
 from .models import (
     User,
@@ -10,7 +11,7 @@ from .models import (
     Wallet,
     ConsultationRequest,
     ServiceCategory,
-    Transaction, # Added this import
+    Transaction,
 )
 
 User = get_user_model()
@@ -135,31 +136,32 @@ def client_consultations(request):
 def lawyer_dashboard(request):
     if request.user.role != "lawyer":
         return redirect("home")
+    
     profile = get_object_or_404(LawyerProfile, user=request.user)
+
+    # 1. Fetch Incoming Requests (Pending)
+    incoming_requests = ConsultationRequest.objects.filter(
+        lawyer=request.user, 
+        status="pending"
+    ).order_by('-created_at')
+
+    # 2. Fetch Accepted Count
+    total_consultations = ConsultationRequest.objects.filter(
+        lawyer=request.user, status="accepted"
+    ).count()
+
     return render(request, "accounts/lawyer/lawyer_dashboard.html", {
-        "profile": profile, "today_earnings": 0,
-        "total_consultations": ConsultationRequest.objects.filter(lawyer=request.user, status="accepted").count(),
+        "profile": profile,
+        "today_earnings": 0,
+        "total_consultations": total_consultations,
         "average_rating": 0,
+        "incoming_requests": incoming_requests, # <--- Passing the requests here
     })
 
 @login_required
 def lawyer_consultations(request):
     requests = ConsultationRequest.objects.filter(lawyer=request.user).order_by("-created_at")
     return render(request, "accounts/lawyer/consultations.html", {"requests": requests})
-
-@login_required
-def update_consultation_status(request, request_id, action):
-    consultation = get_object_or_404(ConsultationRequest, id=request_id, lawyer=request.user)
-    if consultation.status != "pending":
-        return redirect("lawyer_consultations")
-    
-    if action == "accept":
-        consultation.status = "accepted"
-        consultation.save()
-    elif action == "reject":
-        consultation.status = "rejected"
-        consultation.save()
-    return redirect("lawyer_consultations")
 
 @login_required
 def lawyer_profile(request):
@@ -177,7 +179,35 @@ def lawyer_earnings(request):
     return render(request, "accounts/lawyer/earnings.html")
 
 # =========================
-# WALLET VIEWS (Added)
+# UPDATE CONSULTATION (ACCEPT/REJECT + GENERATE ROOM ID)
+# =========================
+@login_required
+def update_consultation_status(request, request_id, action):
+    consultation = get_object_or_404(
+        ConsultationRequest,
+        id=request_id,
+        lawyer=request.user
+    )
+
+    if consultation.status != "pending":
+        return redirect("lawyer_dashboard")
+
+    if action == "accept":
+        consultation.status = "accepted"
+        # Generate Unique Room ID
+        consultation.room_id = f"consultation-{str(uuid.uuid4())[:8]}"
+        consultation.save()
+
+    elif action == "reject":
+        consultation.status = "rejected"
+        consultation.save()
+
+    # Redirect back to dashboard to see the change
+    return redirect("lawyer_dashboard")
+
+
+# =========================
+# WALLET VIEWS
 # =========================
 @login_required
 def wallet_view(request):
@@ -191,36 +221,15 @@ def wallet_view(request):
 @login_required
 def add_funds(request):
     if request.method == "POST":
-        amount = request.POST.get("amount")
-        try:
-            amount = float(amount)
-            if amount > 0:
-                request.user.wallet.credit(amount, description="Added funds via Bank")
-                messages.success(request, f"Successfully added ₹{amount}")
-            else:
-                messages.error(request, "Enter a valid amount")
-        except ValueError:
-            messages.error(request, "Invalid input")
-    return redirect("wallet")
-
-# =========================
-# ADD FUNDS (FIXED)
-# =========================
-@login_required
-def add_funds(request):
-    if request.method == "POST":
         amount_str = request.POST.get("amount")
         try:
-            # 2. CHANGE THIS LINE: Use Decimal() instead of float()
+            # Use Decimal for financial calculations
             amount = Decimal(amount_str)
-            
             if amount > 0:
                 request.user.wallet.credit(amount, description="Added funds via Bank")
                 messages.success(request, f"Successfully added ₹{amount}")
             else:
                 messages.error(request, "Enter a valid amount")
         except:
-            # This catches both ValueError and Decimal's InvalidOperation
             messages.error(request, "Invalid input")
-    
     return redirect("wallet")

@@ -81,21 +81,25 @@
             <p>Date: {{ req.created_at|date:"M d, Y" }}</p>
         </div>
 
-        <div style="text-align: right;">
-            <!-- STATUS LOGIC -->
-            {% if req.status == 'pending' %}
-                <div class="status-badge pending">Pending Lawyer Review</div>
+        <!-- Inside the loop in client_consultations.html -->
+
+    <div style="text-align: right;">
+        {% if req.status == 'pending' %}
+            <div class="status-badge pending">Pending Lawyer Review</div>
+        
+        {% elif req.status == 'rejected' %}
+            <div class="status-badge rejected">Request Declined</div>
+        
+        {% elif req.status == 'accepted' %}
+            <div class="status-badge accepted">Approved</div>
             
-            {% elif req.status == 'rejected' %}
-                <div class="status-badge rejected">Request Declined</div>
-            
-            {% elif req.status == 'accepted' %}
-                <div class="status-badge accepted">Approved</div>
-                <!-- TODO: We will add the video link here later -->
-                <br>
-                <span style="font-size:12px; color:#888;">Wait for call start...</span>
-            {% endif %}
-        </div>
+            <!-- GREEN JOIN BUTTON -->
+            <!-- Only appears when Lawyer accepts -->
+            <a href="#" class="join-btn">
+                Join Video Call
+            </a>
+        {% endif %}
+    </div>
     </div>
     {% empty %}
     <p style="color: #666;">You haven't made any requests yet.</p>

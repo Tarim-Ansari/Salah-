@@ -1,259 +1,63 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>SALAH | Client Home</title>
-
+    <meta charset="UTF-8">
+    <title>My Consultations | SALAH</title>
     <style>
-        /* ===== RESET ===== */
-        * {
-            box-sizing: border-box;
+        body { margin: 0; font-family: sans-serif; background: #0b0b0b; color: #eaeaea; }
+        .container { max-width: 900px; margin: 50px auto; padding: 20px; }
+        
+        .req-card { 
+            background: #111; border: 1px solid #333; padding: 20px; 
+            margin-bottom: 20px; border-radius: 12px; 
+            display: flex; justify-content: space-between; align-items: center;
         }
-
-        body {
-            margin: 0;
-            font-family: "Segoe UI", Arial, sans-serif;
-            background: radial-gradient(circle at top, #1a1a1a 0%, #000 55%);
-            color: #eaeaea;
+        
+        .start-btn {
+            background: #4caf50; color: white; padding: 10px 20px; 
+            text-decoration: none; border-radius: 6px; font-weight: bold;
         }
-
-        /* ===== TOP BAR ===== */
-        .topbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 40px;
-            border-bottom: 1px solid #1f1f1f;
-        }
-
-        .logo {
-            font-size: 22px;
-            font-weight: 700;
-            color: #d89c3a;
-        }
-
-        .welcome {
-            color: #aaa;
-            font-size: 14px;
-        }
-
-        /* ===== MAIN ===== */
-        .container {
-            padding: 35px 40px;
-        }
-
-        /* ===== SEARCH ===== */
-        .search-box input {
-            width: 100%;
-            padding: 14px 18px;
-            border-radius: 14px;
-            border: none;
-            outline: none;
-            background: #fff;
-            font-size: 14px;
-        }
-
-        /* ===== CATEGORY GRID ===== */
-        .categories {
-            margin-top: 30px;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-        }
-
-        .category-card {
-            background: linear-gradient(180deg, #111, #0b0b0b);
-            border: 1px solid #2a2a2a;
-            border-radius: 16px;
-            padding: 26px;
-            text-align: center;
-            transition: transform 0.3s, border 0.3s;
-        }
-
-        .category-card:hover {
-            transform: translateY(-6px);
-            border-color: #d89c3a;
-        }
-
-        .category-card h3 {
-            margin: 10px 0 6px;
-            color: #fff;
-            font-size: 18px;
-        }
-
-        .category-card p {
-            font-size: 13px;
-            color: #aaa;
-        }
-
-        /* ===== REQUESTS ===== */
-        .requests {
-            margin-top: 45px;
-            background: linear-gradient(180deg, #111, #0b0b0b);
-            border: 1px solid #2a2a2a;
-            border-radius: 18px;
-            padding: 26px;
-        }
-
-        .requests h3 {
-            margin-top: 0;
-            color: #d89c3a;
-            margin-bottom: 18px;
-        }
-
-        .request-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 0;
-            border-bottom: 1px solid #222;
-        }
-
-        .request-row:last-child {
-            border-bottom: none;
-        }
-
-        .request-name {
-            font-size: 14px;
-        }
-
-        /* ===== STATUS BADGES ===== */
-        .badge {
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .pending {
-            background: #f39c12;
-            color: #000;
-        }
-
-        .accepted {
-            background: #2ecc71;
-            color: #000;
-        }
-
-        .rejected {
-            background: #e74c3c;
-            color: #fff;
-        }
-        .actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn {
-            padding: 8px 16px;
-            border-radius: 999px;
-            font-size: 13px;
-            font-weight: 600;
-            text-decoration: none;
-        }
-
-        .btn.accept {
-            background: #2ecc71;
-            color: #000;
-        }
-
-        .btn.reject {
-            background: #e74c3c;
-            color: #fff;
-        }
-
-        .btn.video {
-            background: #d4a13a;
-            color: #000;
-        }
-
-        .status.rejected {
-            color: #e74c3c;
-            font-weight: 600;
-        }
-
-
-                /* ===== RESPONSIVE ===== */
-                @media (max-width: 900px) {
-                    .categories {
-                        grid-template-columns: repeat(2, 1fr);
-                    }
-                }
+        .start-btn:hover { background: #43a047; }
+        
+        .badge { padding: 5px 10px; border-radius: 4px; font-size: 12px; }
+        .badge.pending { background: #ffc107; color: black; }
+        .badge.rejected { background: #f44336; color: white; }
     </style>
 </head>
-
 <body>
 
-<!-- TOP BAR -->
-<div class="topbar">
-    <div class="logo">SALLAH</div>
-    <div class="welcome">Welcome, Client</div>
-</div>
-
-<!-- MAIN CONTENT -->
 <div class="container">
+    <a href="{% url 'lawyer_dashboard' %}" style="color:#888;">← Back to Dashboard</a>
+    <h1 style="color: #d89c3a;">My Consultations</h1>
 
-    <!-- SEARCH -->
-    <!-- <div class="search-box">
-        <input type="text" placeholder="Search lawyer by problem or location...">
-    </div> -->
-
-    <!-- CATEGORIES -->
-    <div class="categories">
-        <div class="category-card">
-            <h3>Family Law</h3>
-            <p>Divorce, custody</p>
+    {% for req in requests %}
+    <div class="req-card">
+        <div>
+            <h3>Client: {{ req.client.get_full_name }}</h3>
+            <p style="color:#888;">Subject: {{ req.subject }}</p>
         </div>
 
-        <div class="category-card">
-            <h3>Criminal</h3>
-            <p>Bail, FIR</p>
-        </div>
-
-        <div class="category-card">
-            <h3>Corporate</h3>
-            <p>Company cases</p>
-        </div>
-
-        <div class="category-card">
-            <h3>Cyber Law</h3>
-            <p>Online fraud</p>
-        </div>
-    </div>
-
-    <!-- MY REQUESTS -->
-    <div class="requests">
-        <h3>My Requests</h3>
-
-        {% for r in requests %}
-        <div class="request-row">
-            <div>
-                <strong>{{ r.client.get_full_name }}</strong><br>
-                {{ r.subject }}<br>
-                <small>{{ r.created_at|date:"d M Y, H:i" }}</small>
-            </div>
-
-            {% if r.status == "pending" %}
-                <div class="actions">
-                    <a href="{% url 'update_consultation_status' r.id 'accept' %}" class="btn accept">
-                        Accept
-                    </a>  
-                    <a href="{% url 'update_consultation_status' r.id 'reject' %}" class="btn reject">
-                        Reject
-                    </a>                    
-                </div>
-            {% comment %} {% elif r.status == "accepted" %}
-                <a href="/consultation/{{ r.room_id }}/?role=lawyer" class="btn video">
-                    Join Call
+        <div>
+            {% if req.status == 'accepted' %}
+                <!-- THIS IS THE GREEN BUTTON YOU WANTED -->
+                <!-- It links to the video room using the Generated Room ID -->
+                <!-- We will hook up the actual video URL later, for now it's a placeholder -->
+                <a href="#" class="start-btn">
+                    Start Consultation
                 </a>
-            {% else %} {% endcomment %}
-                <span class="status rejected">Rejected</span>
+                <div style="margin-top:5px; font-size:11px; color:#666;">ID: {{ req.room_id }}</div>
+            
+            {% elif req.status == 'pending' %}
+                <span class="badge pending">Pending Acceptance</span>
+            {% else %}
+                <span class="badge rejected">Rejected</span>
             {% endif %}
         </div>
-        {% empty %}
-        <p class="muted">No incoming requests</p>
-        {% endfor %}
     </div>
+    {% empty %}
+    <p>No consultation history.</p>
+    {% endfor %}
 </div>
 
 </body>
