@@ -1,0 +1,120 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Session: {{ session_id }} | SALAH</title>
+    
+    <script src="https://unpkg.com/@daily-co/daily-js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        :root { --bg-color: #050505; --sidebar-bg: #121212; --gold-accent: #f0a500; --text-main: #ffffff; --text-muted: #a0a0a0; --danger: #ef4444; --success: #4ade80; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--bg-color); color: var(--text-main); font-family: 'Manrope', sans-serif; height: 100vh; overflow: hidden; display: flex; }
+        
+        /* SIDEBAR */
+        .sidebar { width: 320px; background-color: var(--sidebar-bg); border-right: 1px solid #222; display: flex; flex-direction: column; padding: 2rem; z-index: 10; }
+        .logo { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--gold-accent); margin-bottom: 2rem; }
+        .metric-card { background: #1a1a1a; padding: 1rem; border-radius: 8px; border-left: 3px solid var(--gold-accent); margin-bottom: 1rem; }
+        .info-label { color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .metric-large { font-size: 1.5rem; font-weight: 700; font-family: 'Playfair Display', serif; }
+        
+        /* FEEDBACK BOX */
+        .feedback-box { margin-top: 1rem; padding: 1rem; background: rgba(240, 165, 0, 0.1); border: 1px dashed var(--gold-accent); border-radius: 8px; }
+        .feedback-text { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; }
+        .feedback-highlight { color: var(--text-main); font-weight: bold; }
+
+        /* BUTTONS */
+        .btn-end { width: 100%; padding: 1rem; margin-top: auto; border: 1px solid var(--danger); background: rgba(239, 68, 68, 0.1); color: var(--danger); font-weight: bold; cursor: pointer; border-radius: 8px; }
+        .btn-end:hover { background: var(--danger); color: white; }
+
+        /* VIDEO */
+        .video-wrapper { flex: 1; background-color: #000; }
+        #video { width: 100%; height: 100%; border: none; }
+
+        /* TOAST */
+        #toast { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 5px; padding: 16px; position: fixed; z-index: 50; left: 50%; bottom: 30px; transform: translateX(-50%); border-left: 4px solid var(--gold-accent); }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+
+        /* --- NEW RATING MODAL STYLES --- */
+        #rating-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; justify-content: center; align-items: center; }
+        .rating-box { background: #111; padding: 40px; border-radius: 16px; border: 1px solid #333; text-align: center; width: 400px; box-shadow: 0 0 30px rgba(0,0,0,0.8); }
+        .stars { font-size: 40px; cursor: pointer; margin: 20px 0; user-select: none; }
+        .star { color: #444; transition: 0.2s; }
+        .star.gold { color: #ffd700; }
+        textarea { width: 100%; background: #222; border: 1px solid #333; color: white; padding: 15px; border-radius: 8px; resize: none; margin-bottom: 20px; font-family: inherit; }
+        .btn-submit { background: #4ade80; color: #000; border: none; padding: 12px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; width: 100%; }
+        .btn-skip { background: none; border: none; color: #666; margin-top: 15px; cursor: pointer; text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="logo">⚖️ SALAH</div>
+
+        <div class="metric-card">
+            <div class="info-label">Status</div>
+            <div id="status" style="font-size: 1rem; font-weight: 600;">Initializing...</div>
+        </div>
+
+        <div class="metric-card">
+            <div class="info-label">Duration</div>
+            <div id="timer" class="metric-large">00:00</div>
+        </div>
+
+        <div class="feedback-box">
+            <div class="info-label">Billing Feedback</div>
+            <p class="feedback-text">
+                Rate: <span class="feedback-highlight">₹<span id="display-rate">0</span>/min</span><br>
+                Total to deduct: <span class="feedback-highlight" id="deduction-amount">₹0.00</span>
+            </p>
+        </div>
+
+        <button id="end-call-btn" class="btn-end">End Consultation</button>
+    </aside>
+
+    <main class="video-wrapper">
+        <div id="video"></div>
+    </main>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast">Alert message here</div>
+
+    <!-- --- RATING MODAL (HIDDEN BY DEFAULT) --- -->
+    <div id="rating-modal">
+        <div class="rating-box">
+            <h2 style="color:#d89c3a; margin-top:0;">Session Complete</h2>
+            <p style="color:#aaa;">How was your experience?</p>
+            
+            <div class="stars">
+                <span class="star" id="star-1" onclick="setRating(1)">★</span>
+                <span class="star" id="star-2" onclick="setRating(2)">★</span>
+                <span class="star" id="star-3" onclick="setRating(3)">★</span>
+                <span class="star" id="star-4" onclick="setRating(4)">★</span>
+                <span class="star" id="star-5" onclick="setRating(5)">★</span>
+            </div>
+            
+            <input type="hidden" id="selected-rating" value="0">
+            <textarea id="review-text" rows="3" placeholder="Write a brief review (optional)..."></textarea>
+            
+            <button onclick="submitRating()" class="btn-submit">Submit Rating</button>
+            <br>
+            <button onclick="skipRating()" class="btn-skip">Skip</button>
+        </div>
+    </div>
+
+    <!-- GLOBAL VARIABLES -->
+    <script>
+        const ROOM_URL = "{{ room_url }}"; 
+        const SESSION_ID = "{{ session_id }}"; 
+        const RATE = parseFloat("{{ rate }}");
+        const BALANCE = parseFloat("{{ balance }}");
+    </script>
+    
+    <!-- CLIENT LOGIC -->
+    <script src="{% static 'accounts/js/video/client_logic.js' %}"></script>
+</body>
+</html>

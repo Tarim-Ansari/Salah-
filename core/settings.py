@@ -131,4 +131,7 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 
+DAILY_API_KEY = "3f176e1ba53395d25ff899af893e7a76a35fbbd49fe22aa9915edec6d8b36d76"
+DAILY_SUBDOMAIN = "salah-online"
+
 

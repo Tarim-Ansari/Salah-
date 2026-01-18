@@ -3,8 +3,258 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SALLAH | Legal Platform</title>
-    <link rel="stylesheet" href="{% static 'accounts/css/style.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SALAH | Legal Platform</title>
+    
+    <!-- Professional Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        /* CSS VARIABLES for easy color management */
+        :root {
+            --bg-color: #0d0d0d;
+            --card-bg: #1a1a1a;
+            --primary-gold: #d89c3a;
+            --text-white: #ffffff;
+            --text-gray: #a0a0a0;
+            --nav-blur: rgba(13, 13, 13, 0.8);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-white);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* NAVBAR - Added Glassmorphism and better spacing */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 0;
+            background: var(--nav-blur);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-gold);
+            letter-spacing: 1px;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-white);
+            font-size: 0.95rem;
+            font-weight: 400;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--primary-gold);
+        }
+
+        nav a.active {
+            color: var(--primary-gold);
+            font-weight: 600;
+            position: relative;
+        }
+
+        nav a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--primary-gold);
+        }
+
+        /* Wallet Pill Styling */
+        .wallet-pill {
+            background: rgba(216, 156, 58, 0.1);
+            border: 1px solid var(--primary-gold);
+            padding: 6px 15px;
+            border-radius: 50px;
+            color: var(--primary-gold) !important;
+            font-weight: 600 !important;
+        }
+
+        /* Button Styling */
+        .btn {
+            padding: 10px 24px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-small { padding: 8px 18px; }
+
+        .btn-filled {
+            background-color: var(--primary-gold);
+            color: #000;
+        }
+
+        .btn-filled:hover {
+            background-color: #f0b44d;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(216, 156, 58, 0.3);
+        }
+
+        .btn-outline {
+            border: 1px solid var(--primary-gold);
+            color: var(--primary-gold);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-gold);
+            color: #000;
+        }
+
+        .btn-ghost {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-white);
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--primary-gold);
+            color: var(--primary-gold);
+        }
+
+        /* HERO SECTION */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: 80px;
+            padding-bottom: 40px;
+        }
+
+        .hero-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 60px;
+            padding: 0 40px;
+        }
+
+        .hero-text { flex: 1; }
+
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+
+        .hero-text h1 span {
+            color: var(--primary-gold);
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-gray);
+            max-width: 500px;
+            margin-bottom: 40px;
+        }
+
+        /* Actions - Fixed the alignment from the screenshot */
+        .hero-actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 50px;
+        }
+
+        /* Stats Section */
+        .hero-stats {
+            display: flex;
+            gap: 40px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-item strong {
+            display: block;
+            font-size: 1.5rem;
+            color: var(--primary-gold);
+        }
+
+        .stat-item span {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Image - Added a subtle glow behind statue */
+        .hero-image {
+            flex: 1;
+            position: relative;
+            text-align: center;
+        }
+
+        .hero-image img {
+            max-width: 100%;
+            height: auto;
+            filter: drop-shadow(0 0 20px rgba(0,0,0,0.5));
+            position: relative;
+            z-index: 2;
+        }
+
+        .image-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(216, 156, 58, 0.15) 0%, transparent 70%);
+            z-index: 1;
+        }
+
+        /* Responsiveness */
+        @media (max-width: 992px) {
+            .hero-inner { flex-direction: column; text-align: center; padding-top: 50px; }
+            .hero-text h1 { font-size: 3rem; }
+            .hero-subtitle { margin: 0 auto 30px; }
+            .hero-actions { justify-content: center; }
+            .hero-stats { justify-content: center; }
+        }
+    </style>
 </head>
 <body>
 
@@ -13,63 +263,66 @@
     <div class="nav-inner">
         <div class="logo">⚖ SALAH</div>
         <nav>
-            <a href="{% url 'home' %}">Home</a>
-            <a href="{% url 'services' %}">Practice Areas</a>
+            <a href="{% url 'home' %}" class="active">Home</a>
+            <a href="{% url 'services' %}">Services</a>
             <a href="{% url 'experts' %}">Experts</a>
-        
             {% if user.is_authenticated %}
-                <a href="{% url 'logout' %}" class="btn small">Logout</a>
+                <a href="{% url 'client_consultations' %}">My Consultations</a>
+                <a href="{% url 'wallet' %}" class="wallet-pill">
+                    ₹{{ user.wallet.balance|default:"0.00" }}
+                </a>
+                <a href="{% url 'logout' %}" class="btn btn-small btn-outline">Logout</a>
             {% else %}
-                <a href="{% url 'login' %}" class="btn small">Login</a>
+                <a href="{% url 'login' %}" class="btn btn-small btn-outline">Login</a>
             {% endif %}
-        
-            <a href="#" class="btn small">Contact</a>
+
+            <a href="#" class="btn btn-small btn-filled">Contact</a>
         </nav>
-        
     </div>
 </header>
 
-<!-- HERO -->
-<section class="hero">
+<!-- HERO SECTION -->
+<main class="hero">
     <div class="hero-inner">
 
-        <!-- LEFT -->
+        <!-- Left Content -->
         <div class="hero-text">
-            <h1>Lawyers You Can <span>Trust</span>.</h1>
+            <h1>Lawyers You Can <br><span>Trust.</span></h1>
 
-            <p>
+            <p class="hero-subtitle">
                 Connect with verified advocates and law students for
                 reliable, confidential, and affordable legal guidance.
             </p>
 
             <div class="hero-actions">
-                <a href="{% url 'services' %}" class="btn primary">Talk to a Lawyer</a>
-                <a href="{% url 'experts' %}" class="btn ghost">Browse Experts</a>
+                <a href="{% url 'services' %}" class="btn btn-filled">Talk to a Lawyer</a>
+                <a href="{% url 'experts' %}" class="btn btn-ghost">Browse Experts</a>
             </div>
 
             <div class="hero-stats">
-                <div>
+                <div class="stat-item">
                     <strong>25+</strong>
                     <span>Years Experience</span>
                 </div>
-                <div>
+                <div class="stat-item">
                     <strong>500+</strong>
                     <span>Clients Served</span>
                 </div>
-                <div>
+                <div class="stat-item">
                     <strong>98%</strong>
                     <span>Success Rate</span>
                 </div>
             </div>
         </div>
 
-        <!-- RIGHT -->
+        <!-- Right Content -->
         <div class="hero-image">
+            <div class="image-glow"></div>
             <img src="{% static 'accounts/images/statue.png' %}" alt="Lady Justice">
         </div>
 
     </div>
-</section>
+</main>
 
 </body>
 </html>

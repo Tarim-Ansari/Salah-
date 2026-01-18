@@ -1,0 +1,70 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expert Console: {{ session_id }} | SALAH</title>
+    
+    <script src="https://unpkg.com/@daily-co/daily-js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #050505;
+            --sidebar-bg: #121212;
+            --gold-accent: #f0a500;
+            --text-main: #ffffff;
+            --text-muted: #a0a0a0;
+            --danger: #ef4444;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--bg-color); color: var(--text-main); font-family: 'Manrope', sans-serif; height: 100vh; overflow: hidden; display: flex; }
+
+        .sidebar { width: 320px; background-color: var(--sidebar-bg); border-right: 1px solid #222; display: flex; flex-direction: column; padding: 2rem; z-index: 10; }
+        .logo { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--gold-accent); margin-bottom: 2rem; }
+
+        .metric-card { background: #1a1a1a; padding: 1rem; border-radius: 8px; border-left: 3px solid var(--gold-accent); margin-bottom: 1rem; }
+        .info-label { color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .metric-large { font-size: 1.5rem; font-weight: 700; font-family: 'Playfair Display', serif; }
+
+        .btn-end { width: 100%; padding: 1rem; margin-top: auto; border: 1px solid var(--danger); background: rgba(239, 68, 68, 0.1); color: var(--danger); font-weight: bold; cursor: pointer; border-radius: 8px; }
+        .btn-end:hover { background: var(--danger); color: white; }
+
+        .video-wrapper { flex: 1; background-color: #000; }
+        #video { width: 100%; height: 100%; border: none; }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="logo">⚖️ SALAH <span style="font-size: 0.5em; color: #666;">(Expert)</span></div>
+
+        <div class="metric-card">
+            <div class="info-label">Status</div>
+            <div id="status" style="font-size: 1rem; font-weight: 600;">Initializing...</div>
+        </div>
+
+        <div class="metric-card">
+            <div class="info-label">Duration</div>
+            <div id="timer" class="metric-large">00:00</div>
+        </div>
+        
+        <!-- NO BILLING BOX HERE FOR LAWYERS -->
+
+        <button id="end-call-btn" class="btn-end">End Session</button>
+    </aside>
+
+    <main class="video-wrapper">
+        <div id="video"></div>
+    </main>
+
+    <script>
+        const ROOM_URL = "{{ room_url }}"; 
+        const SESSION_ID = "{{ session_id }}"; 
+    </script>
+    
+    <!-- IMPORTANT: Points to LAWYER LOGIC -->
+    <script src="{% static 'accounts/js/video/lawyer_logic.js' %}"></script>
+</body>
+</html>

@@ -5,7 +5,9 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", include("accounts.urls")),
+    # This points the root URL to your accounts app
+    path("", include("accounts.urls")), 
+    # REMOVED: path('', include('home.urls')), <--- This was causing the crash
 ]
 
 if settings.DEBUG:
