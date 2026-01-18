@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
     
-    // 1. CONFIGURATION (Read from Global Variables set in HTML)
-    // We no longer read from URL. We read from Django passed variables.
+    // 1. CONFIGURATION
     const STORAGE_KEY = `salah_session_${SESSION_ID}`;
 
     // 2. DOM ELEMENTS
@@ -10,12 +9,11 @@ document.addEventListener("DOMContentLoaded", function() {
         status: document.getElementById("status"),
         deduction: document.getElementById("deduction-amount"),
         rateDisplay: document.getElementById("display-rate"),
-        costWrapper: document.getElementById("cost-wrapper"),
-        toggleBtn: document.getElementById("toggle-btn"),
         toast: document.getElementById("toast"),
         endBtn: document.getElementById("end-call-btn")
     };
 
+    // Set initial Rate Display
     if(els.rateDisplay) els.rateDisplay.innerText = RATE;
 
     // 3. STATE
@@ -26,18 +24,20 @@ document.addEventListener("DOMContentLoaded", function() {
         isPaused: true // Force pause on load
     };
 
-    // Load State (Time only)
+    // Load State (Resume from LocalStorage if reload happened)
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
         const parsed = JSON.parse(saved);
         state.seconds = parsed.seconds || 0;
         state.billingActive = parsed.billingActive || false;
         state.warningShown = parsed.warningShown || false;
+        
+        // We restore time, but we keep isPaused=true until video confirms connection
         state.isPaused = true; 
         updateUI();
     }
 
-    // 4. DAILY VIDEO
+    // 4. DAILY VIDEO SETUP
     if (!window.Daily) { alert("Daily Library missing"); return; }
 
     const call = Daily.createFrame(document.getElementById("video"), {
@@ -45,11 +45,11 @@ document.addEventListener("DOMContentLoaded", function() {
         iframeStyle: { width: '100%', height: '100%', border: '0', backgroundColor: '#050505' }
     });
     
-    if (ROOM_URL) {
+    if (typeof ROOM_URL !== 'undefined' && ROOM_URL) {
         call.join({ url: ROOM_URL });
     }
 
-    // 5. CORE LOOP
+    // 5. CORE LOOP (The Heartbeat)
     setInterval(() => {
         if (!state.isPaused) {
             state.seconds++;
@@ -63,35 +63,33 @@ document.addEventListener("DOMContentLoaded", function() {
     call.on("participant-joined", checkParticipants);
     call.on("participant-left", checkParticipants);
     
+    // --- RELOAD HANDLER (Consolidated Logic) ---
+    let isPageUnloading = false;
+
+    window.addEventListener("beforeunload", () => {
+        // 1. Set flag so we don't show the "Session Ended" alert
+        isPageUnloading = true;
+        // 2. Force immediate leave so Lawyer gets notified instantly
+        if(call) call.leave();
+    });
+
     call.on("left-meeting", () => {
-        const cost = calculateCost();
-        // Here we will eventually send this data to the backend
-        alert(`Session Ended. Total Deduction: ₹${cost}`);
-        window.location.href = "/client/consultations/"; // Redirect back to list
+        // Only show the alert if it's a REAL end (clicked button), not a refresh
+        if (!isPageUnloading) {
+            const cost = calculateCost();
+            alert(`Session Ended. Total Estimated Deduction: ₹${cost}`);
+            window.location.href = "/client/consultations/"; 
+        }
     });
 
     els.endBtn.addEventListener("click", () => {
         if(confirm("End Consultation?")) call.leave();
     });
 
-    // Toggle Blur
-    let isBlurVisible = false;
-    els.toggleBtn.addEventListener("click", () => {
-        if (isBlurVisible) {
-            els.costWrapper.classList.add('blurred');
-            els.costWrapper.classList.remove('unblurred');
-            els.toggleBtn.innerText = "👁️"; 
-        } else {
-            els.costWrapper.classList.remove('blurred');
-            els.costWrapper.classList.add('unblurred');
-            els.toggleBtn.innerText = "❌"; 
-        }
-        isBlurVisible = !isBlurVisible;
-    });
-
     // 7. HELPER FUNCTIONS
     function checkParticipants() {
         const pCount = Object.keys(call.participants()).length;
+
         if (pCount >= 2) {
             state.isPaused = false;
             els.status.innerText = "Live";
@@ -108,20 +106,23 @@ document.addEventListener("DOMContentLoaded", function() {
             els.status.innerText = "Free Intro";
             return;
         }
+
         if (!state.billingActive) {
             state.billingActive = true;
-            showToast("Billing Started");
+            showToast("Free period over. Billing Started.");
         }
+
         const currentCost = calculateCost();
         const remaining = BALANCE - currentCost;
 
         if (remaining < (RATE * 2) && !state.warningShown && remaining > 0) {
-            showToast("⚠️ Low Balance");
+            showToast("⚠️ Low Balance Warning");
             state.warningShown = true;
         }
+
         if (currentCost >= BALANCE) {
             call.leave();
-            alert("Balance Exhausted");
+            alert("Balance Exhausted. Ending Call.");
         }
     }
 

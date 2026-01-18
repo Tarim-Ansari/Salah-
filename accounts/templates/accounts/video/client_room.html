@@ -17,6 +17,7 @@
             --text-main: #ffffff;
             --text-muted: #a0a0a0;
             --danger: #ef4444;
+            --success: #4ade80;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -38,10 +39,6 @@
 
         .video-wrapper { flex: 1; background-color: #000; }
         #video { width: 100%; height: 100%; border: none; }
-        
-        .blurred { filter: blur(8px); user-select: none; transition: filter 0.3s; }
-        .unblurred { filter: blur(0); transition: filter 0.3s; }
-        .toggle-btn { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 1rem; float: right; }
 
         #toast { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 5px; padding: 16px; position: fixed; z-index: 50; left: 50%; bottom: 30px; transform: translateX(-50%); border-left: 4px solid var(--gold-accent); }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
@@ -61,11 +58,6 @@
         <div class="metric-card">
             <div class="info-label">Duration</div>
             <div id="timer" class="metric-large">00:00</div>
-        </div>
-        
-        <div class="metric-card">
-            <div class="info-label">Current Bill <button id="toggle-btn" class="toggle-btn">👁️</button></div>
-            <div id="cost-wrapper" class="metric-large blurred"><span id="cost"></span></div>
         </div>
 
         <div class="feedback-box">
