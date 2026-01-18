@@ -299,7 +299,8 @@
             </div>
 
             <div class="stat-card">
-                <h2>{{ rating|default:"0.0" }} ⭐</h2>
+                <!-- Use the variable we calculated in views.py -->
+                <h2>{{ average_rating|default:"0.0" }} ⭐</h2>
                 <span>Rating</span>
             </div>
         </section>

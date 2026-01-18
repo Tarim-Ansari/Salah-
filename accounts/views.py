@@ -10,7 +10,7 @@ from django.conf import settings
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt    
-from django.db.models import Sum
+from django.db.models import Sum, Avg
 from django.utils import timezone
 
 from .models import (
@@ -19,7 +19,7 @@ from .models import (
     Wallet,
     ConsultationRequest,
     ServiceCategory,
-    Transaction,
+    Rating
 )
 
 User = get_user_model()
@@ -140,6 +140,7 @@ def client_consultations(request):
 # =========================
 # LAWYER VIEWS
 # =========================
+
 @login_required
 def lawyer_dashboard(request):
     if request.user.role != "lawyer":
@@ -147,35 +148,35 @@ def lawyer_dashboard(request):
     
     profile = get_object_or_404(LawyerProfile, user=request.user)
 
-    # 1. Fetch Incoming Requests (Pending)
+    # 1. Requests Logic
     incoming_requests = ConsultationRequest.objects.filter(
         lawyer=request.user, 
         status="pending"
     ).order_by('-created_at')
 
-    # 2. Fetch Total Consultations Count
     total_consultations = ConsultationRequest.objects.filter(
         lawyer=request.user, status="accepted"
     ).count()
 
-    # 3. CALCULATE TODAY'S EARNINGS (The New Logic)
+    # 2. Earnings Logic
     today = timezone.now().date()
-    
-    # Sum up 'amount_paid' for all completed requests created today
     earnings_data = ConsultationRequest.objects.filter(
         lawyer=request.user,
         status='completed',
         created_at__date=today
     ).aggregate(total=Sum('amount_paid'))
-    
-    # If None (no earnings), default to 0
     today_earnings = earnings_data['total'] or 0
+
+    # 3. RATING LOGIC (THE FIX)
+    # We fetch all ratings for this lawyer and calculate the average
+    ratings_data = Rating.objects.filter(lawyer=request.user).aggregate(avg=Avg('score'))
+    average_rating = ratings_data['avg'] or 0.0
 
     return render(request, "accounts/lawyer/lawyer_dashboard.html", {
         "profile": profile,
-        "today_earnings": today_earnings, # <--- Passing real data now
+        "today_earnings": today_earnings,
         "total_consultations": total_consultations,
-        "average_rating": 0, # You can implement rating logic similarly later
+        "average_rating": round(average_rating, 1), # <--- Pass the real number
         "incoming_requests": incoming_requests,
     })
 
