@@ -20,9 +20,10 @@
         }
         .start-btn:hover { background: #43a047; }
         
-        .badge { padding: 5px 10px; border-radius: 4px; font-size: 12px; }
-        .badge.pending { background: #ffc107; color: black; }
-        .badge.rejected { background: #f44336; color: white; }
+        .badge { padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
+        .badge.pending { background: rgba(255, 193, 7, 0.15); color: #ffc107; border: 1px solid #ffc107; }
+        .badge.rejected { background: rgba(244, 67, 54, 0.15); color: #f44336; border: 1px solid #f44336; }
+        .badge.completed { background: rgba(33, 150, 243, 0.15); color: #2196f3; border: 1px solid #2196f3; } /* Blue for Completed */
     </style>
 </head>
 <body>
@@ -34,29 +35,45 @@
     {% for req in requests %}
     <div class="req-card">
         <div>
-            <h3>Client: {{ req.client.get_full_name }}</h3>
+            <h3>Client: {{ req.client.get_full_name|default:req.client.username }}</h3>
             <p style="color:#888;">Subject: {{ req.subject }}</p>
+            <span style="font-size: 12px; color: #666;">{{ req.created_at|date:"M d, Y H:i" }}</span>
         </div>
 
         <div>
             {% if req.status == 'accepted' %}
-                <!-- THIS IS THE GREEN BUTTON YOU WANTED -->
-                <!-- It links to the video room using the Generated Room ID -->
-                <!-- We will hook up the actual video URL later, for now it's a placeholder -->
+                <!-- Live Button -->
                 <a href="{% url 'join_room' req.room_id %}" class="start-btn">
                     Start Consultation
                 </a>
-                <div style="margin-top:5px; font-size:11px; color:#666;">ID: {{ req.room_id }}</div>
             
+            {% elif req.status == 'completed' %}
+                <!-- Completed Badge + Earnings -->
+                <div style="text-align: right;">
+                    <span class="badge completed">Completed</span>
+                    
+                    <!-- EARNINGS DISPLAY -->
+                    {% if req.amount_paid > 0 %}
+                        <div style="margin-top:6px; color:#4ade80; font-size:13px; font-weight:bold;">
+                            + ₹{{ req.amount_paid }}
+                        </div>
+                    {% else %}
+                        <div style="margin-top:6px; color:#888; font-size:12px;">
+                            Free Session
+                        </div>
+                    {% endif %}
+                </div>
+
             {% elif req.status == 'pending' %}
                 <span class="badge pending">Pending Acceptance</span>
+            
             {% else %}
                 <span class="badge rejected">Rejected</span>
             {% endif %}
         </div>
     </div>
     {% empty %}
-    <p>No consultation history.</p>
+    <p style="color: #666;">No consultation history.</p>
     {% endfor %}
 </div>
 

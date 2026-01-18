@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Case Details | SALAH</title>
+    <style>
+        body { margin: 0; font-family: "Segoe UI", sans-serif; background: #0b0b0b; color: #eaeaea; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        
+        .container {
+            width: 100%; max-width: 700px;
+            background: #111; border: 1px solid #2a2a2a; border-radius: 16px;
+            padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .header { border-bottom: 1px solid #222; padding-bottom: 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { margin: 0; color: #d89c3a; font-size: 24px; }
+        .back-link { color: #888; text-decoration: none; font-size: 14px; }
+        .back-link:hover { color: #fff; }
+
+        .meta-row { display: flex; gap: 40px; margin-bottom: 30px; color: #aaa; font-size: 14px; }
+        .meta-item strong { color: #fff; display: block; margin-bottom: 4px; }
+
+        .brief-section { background: #1a1a1a; padding: 20px; border-radius: 8px; border-left: 4px solid #d89c3a; margin-bottom: 30px; }
+        .brief-label { font-size: 12px; text-transform: uppercase; color: #d89c3a; font-weight: bold; margin-bottom: 10px; display: block; }
+        .brief-content { line-height: 1.6; color: #ddd; white-space: pre-wrap; } /* pre-wrap keeps paragraphs */
+
+        .actions { display: flex; gap: 15px; margin-top: 30px; border-top: 1px solid #222; padding-top: 20px; }
+        
+        .btn { flex: 1; padding: 15px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; font-size: 16px; text-decoration: none; text-align: center; }
+        .btn-accept { background: #2ecc71; color: #000; }
+        .btn-accept:hover { background: #27ae60; }
+        
+        .btn-reject { background: #e74c3c; color: #fff; }
+        .btn-reject:hover { background: #c0392b; }
+
+        .completed-msg { text-align: center; color: #aaa; width: 100%; padding: 10px; background: #222; border-radius: 8px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>Case Brief Review</h1>
+            <a href="{% url 'lawyer_dashboard' %}" class="back-link">← Back to Dashboard</a>
+        </div>
+
+        <div class="meta-row">
+            <div class="meta-item">
+                <strong>Client</strong>
+                {{ req.client.get_full_name|default:req.client.username }}
+            </div>
+            <div class="meta-item">
+                <strong>Category</strong>
+                {{ req.category.name }}
+            </div>
+            <div class="meta-item">
+                <strong>Date</strong>
+                {{ req.created_at|date:"M d, Y" }}
+            </div>
+        </div>
+
+        <div>
+            <label class="brief-label">Subject</label>
+            <h2 style="margin: 0 0 20px 0; color: white;">{{ req.subject }}</h2>
+        </div>
+
+        <div class="brief-section">
+            <label class="brief-label">Detailed Description</label>
+            <div class="brief-content">{{ req.description }}</div>
+        </div>
+
+        <div class="actions">
+            {% if req.status == 'pending' %}
+                <!-- THESE BUTTONS TRIGGER THE ACTION -->
+                <a href="{% url 'update_consultation_status' req.id 'reject' %}" class="btn btn-reject">
+                    Decline Case
+                </a>
+                
+                <a href="{% url 'update_consultation_status' req.id 'accept' %}" class="btn btn-accept">
+                    Accept & Create Room
+                </a>
+            {% else %}
+                <div class="completed-msg">
+                    This request has already been {{ req.status }}.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+</body>
+</html>

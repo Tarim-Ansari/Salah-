@@ -10,10 +10,10 @@ document.addEventListener("DOMContentLoaded", function() {
         deduction: document.getElementById("deduction-amount"),
         rateDisplay: document.getElementById("display-rate"),
         toast: document.getElementById("toast"),
-        endBtn: document.getElementById("end-call-btn")
+        endBtn: document.getElementById("end-call-btn"),
+        ratingModal: document.getElementById("rating-modal")
     };
 
-    // Set initial Rate Display
     if(els.rateDisplay) els.rateDisplay.innerText = RATE;
 
     // 3. STATE
@@ -21,18 +21,16 @@ document.addEventListener("DOMContentLoaded", function() {
         seconds: 0,
         billingActive: false,
         warningShown: false,
-        isPaused: true // Force pause on load
+        isPaused: true
     };
 
-    // Load State (Resume from LocalStorage if reload happened)
+    // Load State
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
         const parsed = JSON.parse(saved);
         state.seconds = parsed.seconds || 0;
         state.billingActive = parsed.billingActive || false;
         state.warningShown = parsed.warningShown || false;
-        
-        // We restore time, but we keep isPaused=true until video confirms connection
         state.isPaused = true; 
         updateUI();
     }
@@ -49,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function() {
         call.join({ url: ROOM_URL });
     }
 
-    // 5. CORE LOOP (The Heartbeat)
+    // 5. CORE LOOP
     setInterval(() => {
         if (!state.isPaused) {
             state.seconds++;
@@ -63,22 +61,48 @@ document.addEventListener("DOMContentLoaded", function() {
     call.on("participant-joined", checkParticipants);
     call.on("participant-left", checkParticipants);
     
-    // --- RELOAD HANDLER (Consolidated Logic) ---
+    // RELOAD HANDLER
     let isPageUnloading = false;
-
     window.addEventListener("beforeunload", () => {
-        // 1. Set flag so we don't show the "Session Ended" alert
         isPageUnloading = true;
-        // 2. Force immediate leave so Lawyer gets notified instantly
         if(call) call.leave();
     });
 
-    call.on("left-meeting", () => {
-        // Only show the alert if it's a REAL end (clicked button), not a refresh
+    // --- LEFT MEETING (PAYMENT + MODAL TRIGGER) ---
+    call.on("left-meeting", async () => {
         if (!isPageUnloading) {
             const cost = calculateCost();
-            alert(`Session Ended. Total Estimated Deduction: ₹${cost}`);
-            window.location.href = "/client/consultations/"; 
+            let paymentSuccess = false;
+            
+            // 1. Process Payment
+            if (cost > 0) {
+                els.status.innerText = "Processing Payment...";
+                try {
+                    const response = await fetch("/api/end_consultation/", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json", "X-CSRFToken": getCookie("csrftoken") },
+                        body: JSON.stringify({ room_id: SESSION_ID, amount: cost })
+                    });
+                    const result = await response.json();
+                    if (result.status === "success") paymentSuccess = true;
+                } catch (error) {
+                    console.error("Payment Error:", error);
+                }
+            } else {
+                paymentSuccess = true; // Free call counts as success
+            }
+
+            // 2. Clear Storage
+            localStorage.removeItem(STORAGE_KEY);
+
+            // 3. SHOW RATING MODAL (If payment worked or was free)
+            if (paymentSuccess && els.ratingModal) {
+                els.ratingModal.style.display = "flex";
+            } else {
+                // Fallback if modal missing or payment failed
+                alert(`Session Ended. Total Deduction: ₹${cost}`);
+                window.location.href = "/client/consultations/";
+            }
         }
     });
 
@@ -89,7 +113,6 @@ document.addEventListener("DOMContentLoaded", function() {
     // 7. HELPER FUNCTIONS
     function checkParticipants() {
         const pCount = Object.keys(call.participants()).length;
-
         if (pCount >= 2) {
             state.isPaused = false;
             els.status.innerText = "Live";
@@ -102,16 +125,9 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function processBilling() {
-        if (state.seconds <= 120) {
-            els.status.innerText = "Free Intro";
-            return;
-        }
-
-        if (!state.billingActive) {
-            state.billingActive = true;
-            showToast("Free period over. Billing Started.");
-        }
-
+        if (state.seconds <= 120) { els.status.innerText = "Free Intro"; return; }
+        if (!state.billingActive) { state.billingActive = true; showToast("Billing Started"); }
+        
         const currentCost = calculateCost();
         const remaining = BALANCE - currentCost;
 
@@ -119,10 +135,9 @@ document.addEventListener("DOMContentLoaded", function() {
             showToast("⚠️ Low Balance Warning");
             state.warningShown = true;
         }
-
         if (currentCost >= BALANCE) {
             call.leave();
-            alert("Balance Exhausted. Ending Call.");
+            alert("Balance Exhausted.");
         }
     }
 
@@ -139,8 +154,63 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function showToast(msg) {
-        els.toast.innerText = msg;
-        els.toast.className = "show";
-        setTimeout(() => els.toast.className = "", 3000);
+        if(els.toast) {
+            els.toast.innerText = msg;
+            els.toast.className = "show";
+            setTimeout(() => els.toast.className = "", 3000);
+        }
+    }
+
+    // --- RATING LOGIC (Global Scope) ---
+    window.setRating = function(score) {
+        document.getElementById("selected-rating").value = score;
+        for (let i = 1; i <= 5; i++) {
+            const star = document.getElementById(`star-${i}`);
+            if (i <= score) {
+                star.style.color = "#FFD700"; // Gold
+                star.innerHTML = "★";
+            } else {
+                star.style.color = "#444";
+                star.innerHTML = "★";
+            }
+        }
+    };
+
+    window.submitRating = async function() {
+        const score = document.getElementById("selected-rating").value;
+        const review = document.getElementById("review-text").value;
+        
+        if (score == 0) { alert("Please select a rating."); return; }
+
+        try {
+            await fetch("/api/rate_lawyer/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "X-CSRFToken": getCookie("csrftoken") },
+                body: JSON.stringify({ room_id: SESSION_ID, score: score, review: review })
+            });
+            window.location.href = "/client/consultations/";
+        } catch (e) {
+            console.error(e);
+            window.location.href = "/client/consultations/";
+        }
+    };
+
+    window.skipRating = function() {
+        window.location.href = "/client/consultations/";
+    };
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
     }
 });

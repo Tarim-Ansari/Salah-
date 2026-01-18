@@ -36,4 +36,7 @@ urlpatterns = [
     path("wallet/", views.wallet_view, name="wallet"),
     path("wallet/add/", views.add_funds, name="add_funds"),
     path("consultation/<str:room_id>/", views.join_room, name="join_room"),
+     path("api/end_consultation/", views.end_consultation_api, name="end_consultation_api"),
+     path("api/rate_lawyer/", views.rate_lawyer_api, name="rate_lawyer_api"),
+    path("lawyer/request/<int:request_id>/", views.view_case_brief, name="view_case_brief"),
 ]

@@ -5,9 +5,13 @@ from django.contrib import messages
 from decimal import Decimal
 import uuid  
 import requests  
-import time      
-from django.http import HttpResponse 
-from django.conf import settings     
+import time
+from django.conf import settings 
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt    
+from django.db.models import Sum
+from django.utils import timezone
 
 from .models import (
     User,
@@ -149,17 +153,30 @@ def lawyer_dashboard(request):
         status="pending"
     ).order_by('-created_at')
 
-    # 2. Fetch Accepted Count
+    # 2. Fetch Total Consultations Count
     total_consultations = ConsultationRequest.objects.filter(
         lawyer=request.user, status="accepted"
     ).count()
 
+    # 3. CALCULATE TODAY'S EARNINGS (The New Logic)
+    today = timezone.now().date()
+    
+    # Sum up 'amount_paid' for all completed requests created today
+    earnings_data = ConsultationRequest.objects.filter(
+        lawyer=request.user,
+        status='completed',
+        created_at__date=today
+    ).aggregate(total=Sum('amount_paid'))
+    
+    # If None (no earnings), default to 0
+    today_earnings = earnings_data['total'] or 0
+
     return render(request, "accounts/lawyer/lawyer_dashboard.html", {
         "profile": profile,
-        "today_earnings": 0,
+        "today_earnings": today_earnings, # <--- Passing real data now
         "total_consultations": total_consultations,
-        "average_rating": 0,
-        "incoming_requests": incoming_requests, # <--- Passing the requests here
+        "average_rating": 0, # You can implement rating logic similarly later
+        "incoming_requests": incoming_requests,
     })
 
 @login_required
@@ -299,3 +316,106 @@ def join_room(request, room_id):
         return redirect("home")
 
     return render(request, template, context)
+
+# ... (Previous imports remain) ...
+
+# =========================
+# END SESSION & TRANSFER MONEY
+# =========================
+@csrf_exempt  # We exempt CSRF for simplicity in this fetch request, or pass token in JS
+@login_required
+def end_consultation_api(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            room_id = data.get('room_id')
+            amount = Decimal(data.get('amount'))
+
+            # 1. Get the Consultation Request
+            consultation = get_object_or_404(ConsultationRequest, room_id=room_id)
+
+            # 2. Verify: Only the Client can trigger the payment (Security)
+            if request.user != consultation.client:
+                return JsonResponse({"status": "error", "message": "Unauthorized"}, status=403)
+
+            # 3. Perform the Transaction
+            client_wallet = consultation.client.wallet
+            lawyer_wallet = consultation.lawyer.wallet
+
+            if client_wallet.debit(amount, description=f"Consultation Fee: {consultation.lawyer.get_full_name()}"):
+                lawyer_wallet.credit(amount, description=f"Earnings: {consultation.client.get_full_name()}")
+                
+                # Mark as Completed
+                consultation.status = "completed"
+                consultation.amount_paid = amount
+                consultation.save()
+                
+                return JsonResponse({"status": "success", "new_balance": client_wallet.balance})
+            else:
+                return JsonResponse({"status": "error", "message": "Insufficient Balance"}, status=400)
+
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
+
+    return JsonResponse({"status": "error", "message": "Invalid Method"}, status=405)
+
+
+# accounts/views.py
+
+@csrf_exempt
+@login_required
+def rate_lawyer_api(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            room_id = data.get('room_id')
+            score = int(data.get('score'))
+            review = data.get('review', "")
+
+            # Get the completed consultation
+            consultation = get_object_or_404(ConsultationRequest, room_id=room_id)
+
+            # Prevent duplicate ratings
+            if Rating.objects.filter(client=request.user, lawyer=consultation.lawyer).exists():
+                 # Ideally, link rating to specific consultation, but generic is fine for now
+                 pass 
+
+            # Save Rating
+            Rating.objects.create(
+                client=request.user,
+                lawyer=consultation.lawyer,
+                score=score,
+                review=review
+            )
+
+            # UPDATE LAWYER'S AVERAGE RATING
+            # (Simple average calculation)
+            ratings = Rating.objects.filter(lawyer=consultation.lawyer)
+            avg_rating = sum(r.score for r in ratings) / len(ratings)
+            
+            # Save to Profile so it shows on Dashboard
+            profile = LawyerProfile.objects.get(user=consultation.lawyer)
+            profile.rating = round(avg_rating, 1) # Assuming you add a 'rating' field to LawyerProfile later
+            # For now, we just save the Rating object
+            
+            return JsonResponse({"status": "success"})
+
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
+    return JsonResponse({"status": "error"}, status=400)
+
+# accounts/views.py
+
+@login_required
+def view_case_brief(request, request_id):
+    # 1. Get the request (Ensure it belongs to the logged-in lawyer)
+    consultation_req = get_object_or_404(
+        ConsultationRequest, 
+        id=request_id, 
+        lawyer=request.user
+    )
+
+    # 2. Render the detail template
+    return render(request, "accounts/lawyer/request_detail.html", {
+        "req": consultation_req
+    })

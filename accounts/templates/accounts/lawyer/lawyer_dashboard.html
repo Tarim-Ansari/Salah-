@@ -265,7 +265,14 @@
                 {% endif %}
             </h1>
             
-            <span class="status online">Online</span>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <!-- WALLET DISPLAY -->
+                <div style="background: #111; border: 1px solid #d89c3a; padding: 8px 16px; border-radius: 20px; font-weight: bold; color: #d89c3a;">
+                    Wallet: ₹{{ user.wallet.balance|default:"0.00" }}
+                </div>
+
+                <span class="status online">Online</span>
+            </div>
         </header>
 
         <section class="profile-card">
@@ -280,9 +287,11 @@
 
         <section class="stats">
             <div class="stat-card">
-                <h2>₹{{ todays_earnings|default:"0" }}</h2>
+                <!-- This now uses the calculated variable from views.py -->
+                <h2>₹{{ today_earnings|floatformat:2 }}</h2>
                 <span>Today's Earnings</span>
             </div>
+            
 
             <div class="stat-card">
                 <h2>{{ total_consultations|default:"0" }}</h2>
@@ -298,24 +307,20 @@
         <section class="requests">
             <h3>Incoming Requests</h3>
 
-            <!-- We use 'incoming_requests' passed from the view -->
             {% if incoming_requests %}
                 {% for req in incoming_requests %}
                 <div class="request-row">
                     <div>
                         <strong>{{ req.client.get_full_name|default:req.client.username }}</strong>
                         <span style="color:#888; font-size:13px;"> • {{ req.subject }}</span>
-                        <div style="font-size:12px; color:#666; margin-top:4px;">{{ req.description|truncatechars:50 }}</div>
+                        <div style="font-size:12px; color:#666; margin-top:4px;">{{ req.created_at|timesince }} ago</div>
                     </div>
                     
                     <div class="actions">
-                        <!-- LINK TO VIEW LOGIC -->
-                        <a href="{% url 'update_consultation_status' req.id 'accept' %}" class="button accept" style="text-decoration:none; display:inline-block; padding:8px 16px; border-radius:8px; background:#2ecc71; color:black; font-weight:bold;">
-                            Accept
-                        </a>
-                        
-                        <a href="{% url 'update_consultation_status' req.id 'reject' %}" class="button reject" style="text-decoration:none; display:inline-block; padding:8px 16px; border-radius:8px; background:#e74c3c; color:white; font-weight:bold;">
-                            Reject
+                        <!-- LINK TO THE NEW DETAIL PAGE -->
+                        <a href="{% url 'view_case_brief' req.id %}" 
+                           style="text-decoration:none; padding:8px 16px; border-radius:8px; background:#333; color:white; font-size:13px; border:1px solid #444;">
+                            View Case Brief
                         </a>
                     </div>
                 </div>
