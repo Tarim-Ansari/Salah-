@@ -3,177 +3,63 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Earnings | SALAH</title>
-    <link rel="stylesheet" href="{% static 'accounts/css/dashboard.css' %}">
+    <title>Earnings Report | SALAH</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #0d0d0d; --card: #1a1a1a; --gold: #d89c3a; --text: #fff; --gray: #a0a0a0; }
+        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); padding-top: 80px; }
+        
+        .navbar { position: fixed; top: 0; width: 100%; padding: 15px 0; background: rgba(13,13,13,0.9); backdrop-filter: blur(10px); border-bottom: 1px solid #222; z-index: 100; }
+        .nav-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 40px; }
+        .logo { font-size: 1.2rem; font-weight: 700; color: var(--gold); letter-spacing: 1px; }
+        nav { display: flex; gap: 25px; align-items: center; }
+        nav a { text-decoration: none; color: var(--gray); font-size: 0.9rem; transition: 0.3s; }
+        nav a:hover, nav a.active { color: var(--gold); }
+        nav a.active { font-weight: 600; border-bottom: 2px solid var(--gold); padding-bottom: 4px; }
+        .wallet-pill { background: rgba(216, 156, 58, 0.1); border: 1px solid var(--gold); padding: 5px 15px; border-radius: 50px; color: var(--gold) !important; font-weight: 600; }
+        .btn-logout { font-size: 0.85rem; border: 1px solid #333; padding: 6px 15px; border-radius: 6px; }
+
+        .container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        .chart-box { background: var(--card); border: 1px solid #333; border-radius: 12px; padding: 40px; text-align: center; margin-bottom: 30px; }
+        .big-amount { font-size: 3rem; color: var(--gold); font-weight: 700; margin: 10px 0; }
+    </style>
 </head>
-<style>
-    /* ===== GLOBAL ===== */
-    body {
-        margin: 0;
-        font-family: Inter, system-ui, sans-serif;
-        background: #0b0b0b;
-        color: #fff;
-    }
-
-    /* ===== LAYOUT ===== */
-    .layout {
-        display: flex;
-        min-height: 100vh;
-    }
-
-    /* ===== SIDEBAR ===== */
-    .sidebar {
-        width: 240px;
-        background: #0f0f0f;
-        padding: 30px 20px;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .logo {
-        color: #d4a13a;
-        font-size: 22px;
-        font-weight: 800;
-        margin-bottom: 30px;
-    }
-
-    .sidebar ul {
-        list-style: none;
-        padding: 0;
-    }
-
-    .sidebar ul li a {
-        display: block;
-        padding: 12px 16px;
-        margin-bottom: 8px;
-        border-radius: 10px;
-        color: #ccc;
-        text-decoration: none;
-    }
-
-    .sidebar ul li.active a,
-    .sidebar ul li a:hover {
-        background: #d4a13a;
-        color: #000;
-        font-weight: 600;
-    }
-
-    .logout-btn {
-        margin-top: auto;
-        background: #c0392b;
-        color: #fff;
-        text-align: center;
-        padding: 12px;
-        border-radius: 10px;
-        text-decoration: none;
-    }
-
-    /* ===== MAIN ===== */
-    .content {
-        flex: 1;
-        padding: 40px;
-    }
-
-    /* ===== STATS ===== */
-    .stats {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 24px;
-        margin-bottom: 40px;
-    }
-
-    .stat-box {
-        background: linear-gradient(180deg, #111, #0b0b0b);
-        border: 1px solid rgba(212,161,58,0.3);
-        border-radius: 16px;
-        padding: 26px;
-        text-align: center;
-    }
-
-    .stat-box h2 {
-        color: #d4a13a;
-        font-size: 28px;
-    }
-
-    /* ===== CARD ===== */
-    .card {
-        background: linear-gradient(180deg, #111, #0b0b0b);
-        border-radius: 16px;
-        padding: 24px;
-    }
-
-    .request-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 14px 0;
-        border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .muted {
-        color: #888;
-    }
-
-</style>
 <body>
 
-<div class="layout">
+    <header class="navbar">
+        <div class="nav-inner">
+            <div class="logo">⚖ SALAH <span style="font-size:0.7em; opacity:0.7;">(Expert)</span></div>
+            <nav>
+                <a href="{% url 'lawyer_dashboard' %}">Dashboard</a>
+                <a href="{% url 'lawyer_consultations' %}">Consultations</a>
+                <a href="{% url 'lawyer_earnings' %}" class="active">Earnings</a>
+                <a href="{% url 'lawyer_profile' %}">Profile</a>
+                <a href="{% url 'wallet' %}" class="wallet-pill">₹{{ user.wallet.balance|default:"0" }}</a>
+                <a href="{% url 'logout' %}" class="btn-logout">Logout</a>
+            </nav>
+        </div>
+    </header>
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <h2 class="logo">SALLAH</h2>
-
-        <ul>
-            <li><a href="{% url 'lawyer_dashboard' %}">Dashboard</a></li>
-            <li><a href="{% url 'lawyer_consultations' %}">Consultations</a></li>
-            <li><a href="{% url 'lawyer_profile' %}">Profile</a></li>
-            <li class="active"><a href="{% url 'lawyer_earnings' %}">Earnings</a></li>
-            <li>Settings</li>
-        </ul>
-
-        <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
-    </aside>
-
-    <!-- MAIN -->
-    <main class="content">
-
-        <div class="header">
-            <h1>Earnings</h1>
+    <div class="container">
+        <h1>Financial Overview</h1>
+        
+        <div class="chart-box">
+            <p style="color:var(--gray);">Total Wallet Balance</p>
+            <div class="big-amount">₹{{ user.wallet.balance|default:"0.00" }}</div>
+            <p style="font-size:0.9rem; color:var(--gray);">Available for withdrawal</p>
         </div>
 
-        <!-- STATS -->
-        <div class="stats">
-            <div class="stat-box">
-                <h2>₹{{ wallet.balance }}</h2>
-                <p>Wallet Balance</p>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+            <div class="chart-box" style="margin:0; padding:20px;">
+                <p style="margin:0; color:var(--gray);">Today's Earnings</p>
+                <h2 style="color:#2ecc71; font-size:1.8rem;">₹{{ today_earnings|default:"0" }}</h2>
             </div>
-
-            <div class="stat-box">
-                <h2>₹{{ today_earnings }}</h2>
-                <p>Today's Earnings</p>
-            </div>
-
-            <div class="stat-box">
-                <h2>₹{{ month_earnings }}</h2>
-                <p>This Month</p>
+            <div class="chart-box" style="margin:0; padding:20px;">
+                <p style="margin:0; color:var(--gray);">Transactions</p>
+                <h2 style="color:#fff; font-size:1.8rem;">{{ transactions.count|default:"0" }}</h2>
             </div>
         </div>
-
-        <!-- TRANSACTIONS -->
-        <div class="card">
-            <h3>Recent Transactions</h3>
-
-            {% for t in transactions %}
-                <div class="request-row">
-                    <p>Client: {{ t.client }} · ₹{{ t.amount }}</p>
-                    <small>{{ t.date }}</small>
-                </div>
-            {% empty %}
-                <p class="muted">No transactions yet</p>
-            {% endfor %}
-        </div>
-
-    </main>
-</div>
+    </div>
 
 </body>
 </html>
