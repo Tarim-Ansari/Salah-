@@ -363,25 +363,22 @@ def end_consultation_api(request):
 
 # accounts/views.py
 
+# accounts/views.py
+
 @csrf_exempt
 @login_required
 def rate_lawyer_api(request):
     if request.method == "POST":
         try:
+            # ... (Existing code for getting data) ...
             data = json.loads(request.body)
             room_id = data.get('room_id')
             score = int(data.get('score'))
             review = data.get('review', "")
-
-            # Get the completed consultation
+            
             consultation = get_object_or_404(ConsultationRequest, room_id=room_id)
 
-            # Prevent duplicate ratings
-            if Rating.objects.filter(client=request.user, lawyer=consultation.lawyer).exists():
-                 # Ideally, link rating to specific consultation, but generic is fine for now
-                 pass 
-
-            # Save Rating
+            # 1. Create the Rating
             Rating.objects.create(
                 client=request.user,
                 lawyer=consultation.lawyer,
@@ -389,23 +386,20 @@ def rate_lawyer_api(request):
                 review=review
             )
 
-            # UPDATE LAWYER'S AVERAGE RATING
-            # (Simple average calculation)
+            # 2. Calculate New Average
             ratings = Rating.objects.filter(lawyer=consultation.lawyer)
             avg_rating = sum(r.score for r in ratings) / len(ratings)
             
-            # Save to Profile so it shows on Dashboard
+            # 3. Save to Profile (THE FIX)
             profile = LawyerProfile.objects.get(user=consultation.lawyer)
-            profile.rating = round(avg_rating, 1) # Assuming you add a 'rating' field to LawyerProfile later
-            # For now, we just save the Rating object
+            profile.rating = round(avg_rating, 1) 
+            profile.save()  # <--- THIS WAS MISSING!
             
             return JsonResponse({"status": "success"})
 
         except Exception as e:
             return JsonResponse({"status": "error", "message": str(e)}, status=500)
     return JsonResponse({"status": "error"}, status=400)
-
-# accounts/views.py
 
 @login_required
 def view_case_brief(request, request_id):
