@@ -5,13 +5,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Legal Experts | SALAH</title>
+    
+    <!-- Professional Fonts (Same as Home) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 
     <style>
-        body {
+        /* ===== CSS VARIABLES (Matched to Home) ===== */
+        :root {
+            --bg-color: #0d0d0d;
+            --card-bg: #1a1a1a;
+            --primary-gold: #d89c3a;
+            --text-white: #ffffff;
+            --text-gray: #a0a0a0;
+            --nav-blur: rgba(13, 13, 13, 0.8);
+        }
+
+        * {
+            box-sizing: border-box;
             margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: #0b0b0b;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', "Segoe UI", Arial, sans-serif;
+            background-color: var(--bg-color);
             color: #eaeaea;
+            overflow-x: hidden;
         }
 
         a {
@@ -19,10 +38,16 @@
             color: inherit;
         }
 
+        /* ===== NAVBAR STYLING (Exact Home Copy) ===== */
         .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
             padding: 20px 0;
-            background: #0f0f0f;
-            border-bottom: 1px solid #1f1f1f;
+            background: var(--nav-blur);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .nav-inner {
@@ -35,52 +60,113 @@
         }
 
         .logo {
-            font-size: 22px;
-            font-weight: bold;
-            color: #d89c3a;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-gold);
+            letter-spacing: 1px;
         }
 
-        .navbar nav {
+        nav {
             display: flex;
             align-items: center;
             gap: 25px;
         }
 
-        .navbar nav a {
-            color: #ccc;
+        nav a {
             text-decoration: none;
-            font-size: 15px;
+            color: var(--text-white);
+            font-size: 0.95rem;
+            font-weight: 400;
             transition: color 0.3s;
         }
 
-        .navbar nav a:hover {
-            color: #d89c3a;
+        nav a:hover {
+            color: var(--primary-gold);
         }
 
-        .navbar nav a.active {
-            color: #d89c3a;
+        nav a.active {
+            color: var(--primary-gold);
             font-weight: 600;
             position: relative;
         }
 
-        .navbar nav a.active::after {
+        nav a.active::after {
             content: '';
             position: absolute;
             bottom: -5px;
             left: 0;
             width: 100%;
             height: 2px;
-            background-color: #d89c3a;
+            background-color: var(--primary-gold);
         }
 
+        /* Wallet Pill */
+        .wallet-pill {
+            color: #d89c3a; 
+            font-weight: bold;
+            padding: 6px 15px;
+            border: 1px solid transparent;
+            background: transparent;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+
+        .wallet-pill:hover {
+            background: rgba(216, 156, 58, 0.1);
+            border-color: var(--primary-gold);
+            color: var(--primary-gold) !important;
+        }
+
+        /* Button Classes (Matched to Home) */
+        .btn {
+            padding: 10px 24px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-small { padding: 8px 18px; }
+
+        .btn-filled {
+            background-color: var(--primary-gold);
+            color: #000;
+        }
+        .btn-filled:hover {
+            background-color: #f0b44d;
+        }
+
+        .btn-outline {
+            border: 1px solid var(--primary-gold);
+            color: var(--primary-gold);
+        }
+        .btn-outline:hover {
+            background: var(--primary-gold);
+            color: #000;
+        }
+
+        /* ===== EXPERTS SECTION LAYOUT ===== */
         .experts-section {
-            padding: 60px 40px;
+            padding: 120px 40px 60px 40px; /* Adjusted padding for fixed nav */
             text-align: center;
+            max-width: 1300px;
+            margin: 0 auto;
         }
 
+        /* Heading Styling (Playfair Font + Gold Highlight) */
         .experts-section h1 {
-            font-size: 38px;
+            font-family: 'Playfair Display', serif;
+            font-size: 48px;
             margin-bottom: 40px;
+            color: #fff;
+        }
+
+        .experts-section h1 span {
+            color: var(--primary-gold);
         }
 
         .experts-section p {
@@ -88,6 +174,7 @@
             margin-bottom: 30px;
         }
 
+        /* ===== CARD STYLES (Preserved from your code) ===== */
         .experts-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -105,7 +192,7 @@
 
         .expert-card:hover {
             transform: translateY(-6px);
-            border-color: #d89c3a;
+            border-color: var(--primary-gold);
         }
 
         .expert-card h3 {
@@ -115,7 +202,7 @@
         }
 
         .speciality {
-            color: #d89c3a;
+            color: var(--primary-gold);
             font-size: 14px;
             margin-bottom: 12px;
         }
@@ -131,7 +218,7 @@
             margin-top: 18px;
             text-align: center;
             padding: 12px;
-            background: #d89c3a;
+            background: var(--primary-gold);
             color: #000;
             font-weight: bold;
             border-radius: 10px;
@@ -141,9 +228,8 @@
         .consult-btn:hover {
             background: #c2872f;
         }
-        /* =========================
-        EXPERT CARD AVATAR
-        ========================= */
+
+        /* EXPERT AVATAR */
         .expert-avatar {
             width: 90px;
             height: 90px;
@@ -171,26 +257,35 @@
 
 <body>
 
+<!-- NAVBAR (Standardized) -->
 <header class="navbar">
     <div class="nav-inner">
         <div class="logo">⚖ SALAH</div>
         <nav>
-        <a href="{% url 'home' %}">Home</a>
-        <a href="{% url 'services' %}">Services</a>
-        <a href="{% url 'experts' %}" class="active">Experts</a>
-        <a href="{% url 'client_consultations' %}">My Consultations</a>
-        
-        <a href="{% url 'wallet' %}" style="color: #d89c3a; font-weight: bold;">
-            ₹{{ user.wallet.balance|default:"0.00" }}
-        </a>
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'services' %}">Services</a>
+            <a href="{% url 'experts' %}" class="active">Experts</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'client_consultations' %}">My Consultations</a>
+                
+                <a href="{% url 'wallet' %}" class="wallet-pill">
+                    ₹{{ user.wallet.balance|default:"0.00" }}
+                </a>
 
-        <a href="{% url 'logout' %}">Logout</a>
+                <a href="{% url 'logout' %}" class="btn btn-small btn-outline">Logout</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-small btn-outline">Login</a>
+            {% endif %}
+
+            <a href="#" class="btn btn-small btn-filled">Contact</a>
         </nav>
     </div>
 </header>
 
+<!-- EXPERTS CONTENT -->
 <section class="experts-section">
-    <h1>Available Legal Experts</h1>
+    <!-- Updated Title Font & Color -->
+    <h1>Available Legal <span>Experts</span></h1>
 
     {% if selected_category %}
         <p>Category: <strong>{{ selected_category|title }}</strong></p>
@@ -231,5 +326,3 @@
 
 </body>
 </html>
-
-
