@@ -125,16 +125,25 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function processBilling() {
-        if (state.seconds <= 120) { els.status.innerText = "Free Intro"; return; }
-        if (!state.billingActive) { state.billingActive = true; showToast("Billing Started"); }
+        // Only show "Free Intro" label if you consider the Fixed Fee to include the intro.
+        // If you are charging the Fixed Fee immediately, you might want to remove the "Free Intro" text check
+        // or change the text to "Base Charge Active".
+        
+        // Ensure billing starts tracking
+        if (!state.billingActive) { 
+            state.billingActive = true; 
+        }
         
         const currentCost = calculateCost();
         const remaining = BALANCE - currentCost;
 
+        // Warning if balance gets low
         if (remaining < (RATE * 2) && !state.warningShown && remaining > 0) {
             showToast("⚠️ Low Balance Warning");
             state.warningShown = true;
         }
+        
+        // Cut call if money runs out
         if (currentCost >= BALANCE) {
             call.leave();
             alert("Balance Exhausted.");
@@ -142,8 +151,18 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function calculateCost() {
-        const billable = Math.max(0, state.seconds - 120);
-        return (billable * (RATE / 60)).toFixed(2);
+        const FIXED_FEE = 20;     // The fixed "Base Charge"
+        const FREE_SECONDS = 120;  // 2 Minutes Trial
+
+        // 1. Calculate billable time (Total time minus the 2 free minutes)
+        // If seconds is 60, result is 0. If seconds is 130, result is 10.
+        const billableDuration = Math.max(0, state.seconds - FREE_SECONDS);
+
+        // 2. Calculate the variable cost based on the rate
+        const variableCost = billableDuration * (RATE / 60);
+
+        // 3. Total = Fixed Fee + Variable Cost
+        return (FIXED_FEE + variableCost).toFixed(2);
     }
 
     function updateUI() {
