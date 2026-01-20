@@ -196,9 +196,40 @@ def lawyer_profile(request):
         return redirect("lawyer_profile")
     return render(request, "accounts/lawyer/profile.html", {"profile": profile})
 
+
 @login_required
 def lawyer_earnings(request):
-    return render(request, "accounts/lawyer/earnings.html")
+    # 1. Ensure Wallet Exists
+    wallet, _ = Wallet.objects.get_or_create(user=request.user)
+    
+    # 2. Get Transaction History
+    transactions = wallet.transactions.all().order_by('-created_at')
+
+    # 3. Calculate Today's Earnings
+    today = timezone.now().date()
+    today_earnings_data = ConsultationRequest.objects.filter(
+        lawyer=request.user,
+        status='completed',
+        created_at__date=today
+    ).aggregate(total=Sum('amount_paid'))
+    today_sum = today_earnings_data['total'] or 0
+
+    # 4. Calculate This Month's Earnings
+    month_earnings_data = ConsultationRequest.objects.filter(
+        lawyer=request.user,
+        status='completed',
+        created_at__year=today.year,
+        created_at__month=today.month
+    ).aggregate(total=Sum('amount_paid'))
+    month_sum = month_earnings_data['total'] or 0
+
+    # 5. Pass Data to Template
+    return render(request, "accounts/lawyer/earnings.html", {
+        "wallet": wallet,
+        "transactions": transactions,
+        "today_earnings": today_sum,
+        "month_earnings": month_sum,
+    })
 
 # =========================
 # UPDATE CONSULTATION (ACCEPT/REJECT + GENERATE ROOM ID)
@@ -414,3 +445,5 @@ def view_case_brief(request, request_id):
     return render(request, "accounts/lawyer/request_detail.html", {
         "req": consultation_req
     })
+
+# In accounts/views.py

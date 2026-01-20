@@ -5,15 +5,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Consultations | SALAH</title>
+    
+    <!-- Professional Fonts (Same as Home) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
     <style>
-        body { margin: 0; font-family: sans-serif; background: #0b0b0b; color: #eaeaea; }
-        
-        /* NAVBAR STYLES */
-        .navbar {
-            padding: 20px 0;
-            background: #0f0f0f;
-            border-bottom: 1px solid #1f1f1f;
+        /* ===== CSS VARIABLES (Matched to Home) ===== */
+        :root {
+            --bg-color: #0d0d0d;
+            --card-bg: #1a1a1a;
+            --primary-gold: #d89c3a;
+            --text-white: #ffffff;
+            --text-gray: #a0a0a0;
+            --nav-blur: rgba(13, 13, 13, 0.8);
         }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', "Segoe UI", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: #eaeaea;
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* ===== NAVBAR STYLING (Standardized) ===== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 0;
+            background: var(--nav-blur);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
         .nav-inner {
             max-width: 1200px;
             margin: 0 auto;
@@ -22,64 +58,123 @@
             align-items: center;
             padding: 0 40px;
         }
+
         .logo {
-            font-size: 22px;
-            font-weight: bold;
-            color: #d89c3a;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-gold);
+            letter-spacing: 1px;
         }
-        .navbar nav {
+
+        nav {
             display: flex;
             align-items: center;
             gap: 25px;
         }
-        .navbar nav a {
-            color: #ccc;
+
+        nav a {
             text-decoration: none;
-            font-size: 15px;
+            color: var(--text-white);
+            font-size: 0.95rem;
+            font-weight: 400;
             transition: color 0.3s;
         }
-        .navbar nav a:hover {
-            color: #d89c3a;
+
+        nav a:hover {
+            color: var(--primary-gold);
         }
 
-        .navbar nav a.active {
-            color: #d89c3a;
+        nav a.active {
+            color: var(--primary-gold);
             font-weight: 600;
             position: relative;
         }
 
-        .navbar nav a.active::after {
+        nav a.active::after {
             content: '';
             position: absolute;
             bottom: -5px;
             left: 0;
             width: 100%;
             height: 2px;
-            background-color: #d89c3a;
+            background-color: var(--primary-gold);
         }
 
-        /* CONTENT */
-        .container { max-width: 900px; margin: 50px auto; padding: 20px; }
-        h1 { color: #d89c3a; border-bottom: 1px solid #333; padding-bottom: 15px; }
+        /* Wallet Pill */
+        .wallet-pill {
+            color: #d89c3a; 
+            font-weight: bold;
+            padding: 6px 15px;
+            border: 1px solid transparent;
+            background: transparent;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+
+        .wallet-pill:hover {
+            background: rgba(216, 156, 58, 0.1);
+            border-color: var(--primary-gold);
+            color: var(--primary-gold) !important;
+        }
+        
+        /* Button Styles for Nav */
+        .btn {
+            padding: 10px 24px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-small { padding: 8px 18px; }
+        .btn-outline { border: 1px solid var(--primary-gold); color: var(--primary-gold); }
+        .btn-outline:hover { background: var(--primary-gold); color: #000; }
+        .btn-filled { background-color: var(--primary-gold); color: #000; }
+
+        /* ===== MAIN CONTENT ===== */
+        .container { 
+            max-width: 900px; 
+            margin: 0 auto; 
+            padding: 120px 20px 40px 20px; /* Added Top Padding for Fixed Nav */
+        }
+        
+        h1 { 
+            font-family: 'Playfair Display', serif;
+            color: #fff; 
+            font-size: 32px;
+            border-bottom: 1px solid #333; 
+            padding-bottom: 20px; 
+            margin-bottom: 30px;
+        }
+        
+        /* Highlight word style if needed, currently plain white */
 
         .request-card {
             background: #111;
             border: 1px solid #2a2a2a;
             border-radius: 12px;
-            padding: 20px;
+            padding: 25px;
             margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: border-color 0.3s;
+        }
+        
+        .request-card:hover {
+            border-color: #444;
         }
 
-        .req-info h3 { margin: 0 0 5px; color: #fff; }
-        .req-info p { margin: 2px 0; color: #888; font-size: 14px; }
-        .req-cat { color: #d89c3a; font-weight: bold; font-size: 12px; text-transform: uppercase; }
+        .req-info h3 { margin: 0 0 5px; color: #fff; font-size: 18px; }
+        .req-info p { margin: 4px 0; color: #888; font-size: 14px; }
+        .req-cat { color: var(--primary-gold); font-weight: bold; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
 
         /* STATUS BADGES */
         .status-badge {
-            padding: 10px 18px;
+            padding: 8px 16px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
@@ -88,52 +183,74 @@
             letter-spacing: 0.5px;
         }
         .pending { 
-            background: rgba(255, 193, 7, 0.2); 
+            background: rgba(255, 193, 7, 0.1); 
             color: #ffc107; 
-            border: 1px solid #ffc107;
-            box-shadow: 0 0 10px rgba(255, 193, 7, 0.2);
+            border: 1px solid rgba(255, 193, 7, 0.3);
         }
         .rejected { 
-            background: rgba(244, 67, 54, 0.2); 
+            background: rgba(244, 67, 54, 0.1); 
             color: #f44336; 
-            border: 1px solid #f44336;
-            box-shadow: 0 0 10px rgba(244, 67, 54, 0.2);
+            border: 1px solid rgba(244, 67, 54, 0.3);
         }
         .accepted { 
-            background: rgba(76, 175, 80, 0.2); 
+            background: rgba(76, 175, 80, 0.1); 
             color: #4caf50; 
-            border: 1px solid #4caf50;
-            box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+            border: 1px solid rgba(76, 175, 80, 0.3);
         }
 
         .status-action-container {
             display: flex;
             flex-direction: column;
             align-items: flex-end;
-            gap: 12px;
+            gap: 15px;
+        }
+        .btn {
+            padding: 10px 24px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-small { padding: 8px 18px; }
+
+        .btn-filled {
+            background-color: var(--primary-gold);
+            color: #000;
+        }
+
+        .btn-filled:hover {
+            background-color: #f0b44d;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(216, 156, 58, 0.3);
         }
 
         .join-btn {
             display: inline-block;
             background: #4caf50;
-            color: white;
-            padding: 12px 24px;
+            color: #000; /* Better contrast */
+            padding: 10px 20px;
             text-decoration: none;
-            border-radius: 8px;
-            font-weight: 600;
+            border-radius: 6px;
+            font-weight: 700;
             font-size: 14px;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.2);
         }
         .join-btn:hover { 
             background: #43a047; 
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+            box-shadow: 0 6px 14px rgba(76, 175, 80, 0.3);
         }
     </style>
 </head>
 <body>
 
+<!-- NAVBAR -->
 <header class="navbar">
     <div class="nav-inner">
         <div class="logo">⚖ SALAH</div>
@@ -142,8 +259,17 @@
             <a href="{% url 'services' %}">Services</a>
             <a href="{% url 'experts' %}">Experts</a>
             <a href="{% url 'client_consultations' %}" class="active">My Consultations</a>
-            <a href="{% url 'wallet' %}" style="color: #d89c3a; font-weight: bold;">₹{{ user.wallet.balance|default:"0.00" }}</a>
-            <a href="{% url 'logout' %}">Logout</a>
+            
+            {% if user.is_authenticated %}
+                <a href="{% url 'wallet' %}" class="wallet-pill">
+                    ₹{{ user.wallet.balance|default:"0.00" }}
+                </a>
+                <a href="{% url 'logout' %}" class="btn btn-small btn-outline">Logout</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-small btn-outline">Login</a>
+            {% endif %}
+
+            <a href="#" class="btn btn-small btn-filled">Contact</a>
         </nav>
     </div>
 </header>
@@ -161,22 +287,22 @@
         </div>
 
         <div class="status-action-container">
-        {% if req.status == 'pending' %}
-            <div class="status-badge pending">⏳ Pending Review</div>
-        
-        {% elif req.status == 'rejected' %}
-            <div class="status-badge rejected">✗ Request Rejected</div>
-        
-        {% elif req.status == 'accepted' %}
-            <div class="status-badge accepted">✓ Approved</div>
-            <a href="{% url 'join_room' req.room_id %}" class="join-btn">
-                Join Video Call
-            </a>
-        {% endif %}
-    </div>
+            {% if req.status == 'pending' %}
+                <div class="status-badge pending">⏳ Pending Review</div>
+            
+            {% elif req.status == 'rejected' %}
+                <div class="status-badge rejected">✗ Request Rejected</div>
+            
+            {% elif req.status == 'accepted' %}
+                <div class="status-badge accepted">✓ Approved</div>
+                <a href="{% url 'join_room' req.room_id %}" class="join-btn">
+                    Join Video Call
+                </a>
+            {% endif %}
+        </div>
     </div>
     {% empty %}
-    <p style="color: #666;">You haven't made any requests yet.</p>
+    <p style="color: #666; text-align: center; margin-top: 40px;">You haven't made any requests yet.</p>
     {% endfor %}
 </div>
 
