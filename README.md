@@ -70,10 +70,12 @@ pip install django requests
 ```
 
 ### 5. Configure API Keys
-Open `core/settings.py` (or your respective settings file) and add your Daily.co credentials at the bottom:
-```python
-DAILY_API_KEY = "your_daily_api_key_here"
-DAILY_SUBDOMAIN = "your_daily_subdomain"
+Create .env and add your Daily.co credentials. For reference refer to the .env.example file:
+```
+DAILY_API_KEY = "your_api_key_here"
+DAILY_SUBDOMAIN = "your_subdomain"
+SECRET_KEY = "your_secret_key_here"
+DEBUG = True
 ```
 
 ### 6. Database Migrations
