@@ -12,6 +12,8 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt    
 from django.db.models import Sum, Avg
 from django.utils import timezone
+from groq import Groq
+
 
 from .models import (
     User,
@@ -120,17 +122,140 @@ def request_consultation(request, lawyer_id):
         category_id = request.POST.get("category")
         subject = request.POST.get("subject")
         description = request.POST.get("description")
+        
+        # 1. Grab the NEW fields we added to the form
+        issue_start = request.POST.get("issue_start") or None  # Handle empty dates safely
+        opposing_party = request.POST.get("opposing_party")
+        current_status = request.POST.get("current_status")
+        desired_outcome = request.POST.get("desired_outcome")
+        documents = request.FILES.get("documents")  # 📁 Handle file uploads
+
         category = get_object_or_404(ServiceCategory, id=category_id)
 
+        ai_refined_description = request.POST.get("ai_refined_description")
+        estimated_cost = request.POST.get("estimated_cost") or None
+        estimated_duration = request.POST.get("estimated_duration") or None
+        ai_client_checklist = request.POST.get("ai_client_checklist")
+
+
+        # 2. Save EVERYTHING to the database
         ConsultationRequest.objects.create(
-            client=request.user, lawyer=lawyer_profile.user,
-            category=category, subject=subject, description=description,
+            client=request.user, 
+            lawyer=lawyer_profile.user,
+            category=category, 
+            subject=subject, 
+            description=description,
+            # Pass the new fields here:
+            issue_start=issue_start,
+            opposing_party=opposing_party,
+            current_status=current_status,
+            desired_outcome=desired_outcome,
+            documents=documents,
+            ai_refined_description=ai_refined_description,
+            estimated_cost=estimated_cost,
+            estimated_duration=estimated_duration,
+            ai_client_checklist=ai_client_checklist
         )
         return redirect("client_consultations")
 
     return render(request, "accounts/client/case_brief.html", {
-        "lawyer": lawyer_profile, "categories": categories,
+        "lawyer": lawyer_profile, 
+        "categories": categories,
     })
+
+@csrf_exempt
+@login_required
+def evaluate_intake(request):
+    if request.method == "POST":
+        try:
+            body_data = json.loads(request.body)
+            category = body_data.get("category", "")
+            subject = body_data.get("subject", "")
+            description = body_data.get("description", "")
+            
+            # Grab the chat history from the Javascript
+            chat_history = body_data.get("chat_history", []) 
+            
+            client = Groq(api_key=settings.GROQ_API_KEY)
+            
+            # 1. Setup the messages array with your detailed prompt
+            messages = [
+                {
+                    "role": "system",
+                    "content":'''
+                    'You are the "SALAH AI Legal Intake Specialist," a high-precision paralegal system for an Indian Legal-Tech platform. Your goal is to transform raw user input into a professional, structured case brief while ensuring the user is prepared for their consultation.
+                    ### OPERATIONAL RULES:
+                    1. TONE: Professional, empathetic, and legally formal.
+                    2. CONTEXT: Follow Indian Law (IPC, BNS, CPC) and Indian legal procedures.
+                    3. COMPLETENESS THRESHOLD: You must ensure you have: (a) Clear identity of the opposing party, (b) Date or timeline of the dispute, (c) The specific "ask" or desired remedy, (d) Critical evidence status (contracts, receipts, etc.).
+                    4. NO HALLUCINATION: If the user provides vague info, do not guess. Ask.
+                    5. LOSSLESS SUMMARY: Your final summary must include every specific name, date, amount, and location mentioned by the user.
+
+                    ### OUTPUT FORMAT:
+                    You must ALWAYS respond in valid JSON. Do not include any text outside the JSON block.
+
+                    ### STATE 1: If the case is VAGUE or MISSING critical details:
+                    Return:
+                    {
+                    "status": "CLARIFYING",
+                    "reason": "Explain briefly why you need more info",
+                    "question": "The single most important question to ask the user next",
+                    "is_required": true
+                    }
+
+                    ### STATE 2: If the case is COMPLETE:
+                    Return:
+                    {
+                    "status": "FINALIZED",
+                    "refined_description": "A lossless, 3-paragraph professional legal brief. Para 1: Facts & Parties. Para 2: Dispute Timeline & Evidence. Para 3: Legal complication & Desired Outcome.",
+                    "estimated_duration": 15,
+                    "recommended_questions": ["3-5 specific, strategic questions the user should ask the lawyer during the call"],
+                    "relevant_statutes": ["Mention relevant Indian sections like IPC, Section 138 NI Act, etc., if applicable"]
+                    }'''
+                },
+                {
+                    "role": "user",
+                    "content": f"""
+                        Category: {category}, 
+                        Subject: {subject}, 
+                        Description: {description}
+                        """
+                }
+            ]
+            
+            # 2. Append the Chat History so Groq remembers the conversation
+            for chat in chat_history:
+                messages.append({"role": chat["role"], "content": chat["content"]})
+            
+            # 3. Call Groq
+            completion = client.chat.completions.create(
+                model="llama-3.3-70b-versatile",
+                response_format={"type": "json_object"}, # Safety net: forces Groq to output JSON
+                messages=messages
+            ) 
+            
+            # 4. Extract and clean the JSON response
+            raw_response = completion.choices[0].message.content
+            
+            # Strip markdown just in case (Safety Net)
+            cleaned_response = raw_response.replace("```json", "").replace("```", "").strip()
+            ai_data = json.loads(cleaned_response)
+
+            # 5. Send it back to the HTML page!
+            return JsonResponse(ai_data)
+
+        except Exception as e:
+            # If the AI hallucinates or API breaks, send a safe fallback
+            print(f"Groq Error: {e}")
+            fallback_data = {
+                "status": "FINALIZED",
+                "refined_description": description, # Safe fallback using original text
+                "estimated_duration": 15,
+                "recommended_questions": ["What are my legal rights?", "What is the next step?"]
+            }
+            return JsonResponse(fallback_data)
+
+    return JsonResponse({"error": "Invalid request method"}, status=400)
 
 @login_required
 def client_consultations(request):

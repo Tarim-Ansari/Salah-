@@ -4,7 +4,7 @@
 
 ---
 
-### 🗄️ Step 1: Database Updates (Assigned to: Tarim)
+### 🗄️ Step 1: Database Updates (Assigned to: Diyan)  ✅ Task completed
 **Target File:** `accounts/models.py`
 **Goal:** Update the existing `ConsultationRequest` model to store the new AI-generated insights.
 
@@ -19,7 +19,7 @@ class ConsultationRequest(models.Model):
     
     # NEW AI FIELDS
     ai_refined_description = models.TextField(blank=True, null=True)
-    estimated_cost = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    estimated_cost = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) 
     estimated_duration = models.IntegerField(blank=True, null=True) # In minutes
     ai_client_checklist = models.JSONField(blank=True, null=True) # Stores list of questions
 ```
@@ -27,7 +27,7 @@ class ConsultationRequest(models.Model):
 
 ---
 
-### 🎨 Step 2: The "Eraser-Style" Intake UI (Assigned to: Frontend Team)
+### 🎨 Step 2: The "Eraser-Style" Intake UI (Assigned to: Frontend Team)  ✅ Task completed (Changes in HTML Required)
 **Target File:** `accounts/templates/accounts/client/case_brief.html`
 **Goal:** Modify the existing case brief form to include hidden div containers for the AI Chat and the Final Dashboard. Keep it aligned with the dark/gold theme.
 
