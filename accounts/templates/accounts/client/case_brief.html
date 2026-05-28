@@ -31,11 +31,14 @@
         .ai-message { background: rgba(212, 161, 58, 0.1); border-left: 3px solid #d4a13a; color: #fff; }
         .user-message { background: #222; color: #ccc; margin-left: 20px; }
         #triage-dashboard { background: #0a0a0a; border: 1px solid #d4a13a; border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .triage-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 15px 0; }
-        .triage-label { font-size: 11px; letter-spacing: 1px; color: #888; text-transform: uppercase; }
-        .triage-value { font-size: 20px; color: #fff; font-weight: 600; }
-        #ai-questions-list { background: rgba(255,255,255,0.03); border-radius: 10px; padding: 15px; margin-top: 10px; }
-        .checkbox-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 14px; color: #ccc; }
+        .triage-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; padding: 20px 0; margin-bottom: 20px; }
+        .triage-card { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.08); }
+        .triage-label { font-size: 11px; letter-spacing: 1px; color: #888; text-transform: uppercase; margin-bottom: 10px; display: block; }
+        .triage-value { font-size: 28px; color: #fff; font-weight: 600; margin: 0; }
+        #ai-questions-list { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 20px; margin-top: 15px; border: 1px solid rgba(255,255,255,0.08); }
+        .checkbox-row { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 15px; font-size: 14px; color: #ccc; line-height: 1.6; }
+        .checkbox-row input[type="checkbox"] { margin-top: 4px; width: 18px; height: 18px; cursor: pointer; flex-shrink: 0; }
+        .checkbox-row span { flex: 1; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -127,22 +130,22 @@
 
         <!-- Phase 1 Step 3: Triage Dashboard -->
         <div id="triage-dashboard" style="display: none; margin-top: 40px;">
-            <h3 style="color: #d4a13a; margin-bottom: 5px;">Analysis Complete</h3>
-            <p style="font-size: 13px; color: #777; margin-bottom: 20px;">Your brief has been structured for the lawyer.</p>
+            <h3 style="color: #d4a13a; margin: 0 0 8px 0; font-size: 24px;">Analysis Complete</h3>
+            <p style="font-size: 13px; color: #777; margin: 0 0 25px 0;">Your brief has been structured for the lawyer.</p>
             
             <div class="triage-grid">
-                <div>
+                <div class="triage-card">
                     <span class="triage-label">Estimated Time</span>
                     <p id="display-duration" class="triage-value">-- mins</p>
                 </div>
-                <div>
+                <div class="triage-card">
                     <span class="triage-label">Required Balance</span>
                     <p id="display-cost" class="triage-value" style="color: #d4a13a;">₹ --</p>
                 </div>
             </div>
 
-            <div style="margin-top: 20px;">
-                <span class="triage-label">Recommended Questions for Lawyer</span>
+            <div style="margin-top: 10px;">
+                <span class="triage-label" style="display: block; margin-bottom: 15px; font-size: 12px;">Recommended Questions for Lawyer</span>
                 <div id="ai-questions-list"></div>
             </div>
 
@@ -159,7 +162,10 @@
 <!-- JAVASCRIPT FOR AI CHAT & API CONNECTION    -->
 <!-- ========================================== -->
 <script>
-let chatHistory = []; 
+// Read wallet balance from Django template
+const USER_BALANCE = parseFloat("{{ user.wallet.balance|default:'0' }}");
+
+let chatHistory = [];
 
 async function askAI(isReply = false) {
     const categorySelect = document.querySelector('select[name="category"]');
@@ -232,7 +238,8 @@ async function askAI(isReply = false) {
         else if (data.status === "FINALIZED") {
             // Populate Hidden Inputs for Database
             document.getElementById("hidden_ai_desc").value = data.refined_description;
-            document.getElementById("hidden_est_cost").value = data.estimated_duration * 20; 
+            const estimatedCost = data.estimated_duration * 20;
+            document.getElementById("hidden_est_cost").value = estimatedCost;
             document.getElementById("hidden_est_duration").value = data.estimated_duration;
             document.getElementById("hidden_ai_checklist").value = JSON.stringify(data.recommended_questions);
 
@@ -241,7 +248,7 @@ async function askAI(isReply = false) {
             document.getElementById("triage-dashboard").style.display = "block";
             
             document.getElementById("display-duration").innerText = data.estimated_duration + " mins";
-            document.getElementById("display-cost").innerText = "₹" + (data.estimated_duration * 20);
+            document.getElementById("display-cost").innerText = "₹" + estimatedCost;
             
             const ul = document.getElementById("ai-questions-list");
             ul.innerHTML = "";
@@ -250,6 +257,9 @@ async function askAI(isReply = false) {
             });
             
             document.getElementById("initial-form-section").style.display = "none";
+            
+            // Store estimated cost for wallet verification
+            window.currentEstimatedCost = estimatedCost;
         }
 
     } catch (error) {
@@ -260,9 +270,40 @@ async function askAI(isReply = false) {
     }
 }
 
+// Wallet Verification Function
+function verifyWalletAndSubmit(event) {
+    const estimatedCost = window.currentEstimatedCost || 0;
+    
+    if (USER_BALANCE < estimatedCost) {
+        event.preventDefault(); // Stop form submission
+        
+        const deficit = estimatedCost - USER_BALANCE;
+        alert(
+            `Insufficient Wallet Balance!\n\n` +
+            `Required: ₹${estimatedCost}\n` +
+            `Current Balance: ₹${USER_BALANCE}\n` +
+            `Shortfall: ₹${deficit.toFixed(2)}\n\n` +
+            `Please recharge your wallet to proceed with the consultation.`
+        );
+        
+        // Redirect to wallet page
+        if (confirm("Would you like to recharge your wallet now?")) {
+            window.location.href = "/wallet/";
+        }
+        
+        return false;
+    }
+    
+    // If balance is sufficient, allow form submission
+    return true;
+}
+
 // Event Listeners
 document.getElementById("start-ai-btn").addEventListener("click", () => askAI(false));
 document.getElementById("submit-additional-info").addEventListener("click", () => askAI(true));
+
+// Wallet verification on form submission
+document.getElementById("proceed-to-call-btn").addEventListener("click", verifyWalletAndSubmit);
 
 // Pressing "Enter" in the chat box triggers reply
 document.getElementById("user-reply-input").addEventListener("keypress", function(event) {

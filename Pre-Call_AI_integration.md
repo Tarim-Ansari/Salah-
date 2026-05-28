@@ -76,7 +76,7 @@ class ConsultationRequest(models.Model):
 
 ---
 
-### 🧠 Step 4: The Chat & Wallet Logic (Assigned to: Frontend/Yogesh for QA)
+### 🧠 Step 4: The Chat & Wallet Logic (Assigned to: Frontend/Yogesh for QA) ✅ Task completed
 **Target File:** `<script>` tag inside `case_brief.html`
 **Goal:** Connect the UI to Diyan's API securely using SALAH's existing CSRF token system.
 

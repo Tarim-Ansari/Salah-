@@ -137,6 +137,21 @@ def request_consultation(request, lawyer_id):
         estimated_duration = request.POST.get("estimated_duration") or None
         ai_client_checklist = request.POST.get("ai_client_checklist")
 
+        # WALLET VERIFICATION: Ensure user has sufficient balance
+        if estimated_cost:
+            try:
+                estimated_cost_decimal = Decimal(estimated_cost)
+                user_balance = request.user.wallet.balance
+                
+                if user_balance < estimated_cost_decimal:
+                    messages.error(
+                        request,
+                        f"Insufficient wallet balance. Required: ₹{estimated_cost_decimal}, "
+                        f"Available: ₹{user_balance}. Please recharge your wallet."
+                    )
+                    return redirect("wallet")
+            except (ValueError, AttributeError):
+                pass  # If conversion fails or wallet doesn't exist, proceed anyway
 
         # 2. Save EVERYTHING to the database
         ConsultationRequest.objects.create(
