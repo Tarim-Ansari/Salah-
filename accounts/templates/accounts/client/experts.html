@@ -261,7 +261,7 @@
 <body>
 
 <!-- NAVBAR (Standardized) -->
-<header class="navbar navbar-animate">
+<header class="navbar">
     <div class="nav-inner">
         <div class="logo">⚖ SALAH</div>
         <nav>
@@ -275,12 +275,12 @@
                     ₹{{ user.wallet.balance|default:"0.00" }}
                 </a>
 
-                <a href="{% url 'logout' %}" class="btn btn-small btn-outline btn-animate">Logout</a>
+                <a href="{% url 'logout' %}" class="btn btn-small btn-outline">Logout</a>
             {% else %}
-                <a href="{% url 'login' %}" class="btn btn-small btn-outline btn-animate">Login</a>
+                <a href="{% url 'login' %}" class="btn btn-small btn-outline">Login</a>
             {% endif %}
 
-            <a href="#" class="btn btn-small btn-filled btn-animate">Contact</a>
+            <a href="#" class="btn btn-small btn-filled">Contact</a>
         </nav>
     </div>
 </header>
@@ -288,7 +288,7 @@
 <!-- EXPERTS CONTENT -->
 <section class="experts-section">
     <!-- Updated Title Font & Color -->
-    <h1 class="animate-fade-in-down">Available Legal <span>Experts</span></h1>
+    <h1>Available Legal <span>Experts</span></h1>
 
     {% if selected_category %}
         <p>Category: <strong>{{ selected_category|title }}</strong></p>

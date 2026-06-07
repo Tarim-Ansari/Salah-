@@ -246,154 +246,12 @@
             transform: translateY(-2px);
             box-shadow: 0 6px 14px rgba(76, 175, 80, 0.3);
         }
-
-        /* Transcript Section */
-        .transcript-section {
-            margin-top: 15px;
-            padding: 15px;
-            background: #0a0a0a;
-            border: 1px solid #2a2a2a;
-            border-radius: 8px;
-        }
-
-        .transcript-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            padding: 10px;
-            background: #151515;
-            border-radius: 6px;
-            transition: background 0.3s;
-        }
-
-        .transcript-header:hover {
-            background: #1a1a1a;
-        }
-
-        .transcript-title {
-            font-weight: 600;
-            color: var(--primary-gold);
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .transcript-toggle {
-            color: #888;
-            font-size: 20px;
-            transition: transform 0.3s;
-        }
-
-        .transcript-toggle.open {
-            transform: rotate(180deg);
-        }
-
-        .transcript-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-        }
-
-        .transcript-content.open {
-            max-height: 400px;
-            overflow-y: auto;
-            margin-top: 15px;
-        }
-
-        .transcript-text {
-            color: #ccc;
-            font-size: 13px;
-            line-height: 1.8;
-            white-space: pre-line;
-            font-family: 'Courier New', monospace;
-            padding: 10px;
-            background: #0a0a0a;
-            border-radius: 6px;
-        }
-
-        .transcript-empty {
-            color: #666;
-            font-style: italic;
-            text-align: center;
-            padding: 20px;
-        }
-
-        /* Style speaker labels in transcript */
-        .transcript-text::first-line {
-            font-weight: bold;
-        }
-
-        /* Processing Status Styles */
-        .transcript-processing {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 15px;
-            background: #0a0a0a;
-            border: 1px solid #2a2a2a;
-            border-radius: 8px;
-            margin-top: 15px;
-        }
-
-        .spinner {
-            width: 20px;
-            height: 20px;
-            border: 3px solid #2a2a2a;
-            border-top-color: var(--primary-gold);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .processing-text {
-            color: var(--primary-gold);
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .transcript-pending {
-            color: #666;
-            font-style: italic;
-            padding: 8px 12px;
-            background: transparent;
-            border-left: 2px solid #2a2a2a;
-            margin-top: 10px;
-            font-size: 13px;
-        }
-
-        .transcript-compact {
-            margin-top: 10px;
-            padding: 8px 12px;
-            background: transparent;
-            border-left: 2px solid var(--primary-gold);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .transcript-compact:hover {
-            background: rgba(216, 156, 58, 0.05);
-            border-left-color: #f0b44d;
-        }
-
-        .transcript-compact-title {
-            color: var(--primary-gold);
-            font-size: 13px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
     </style>
 </head>
 <body>
 
 <!-- NAVBAR -->
-<header class="navbar navbar-animate">
+<header class="navbar">
     <div class="nav-inner">
         <div class="logo">⚖ SALAH</div>
         <nav>
@@ -406,92 +264,47 @@
                 <a href="{% url 'wallet' %}" class="wallet-pill">
                     ₹{{ user.wallet.balance|default:"0.00" }}
                 </a>
-                <a href="{% url 'logout' %}" class="btn btn-small btn-outline btn-animate">Logout</a>
+                <a href="{% url 'logout' %}" class="btn btn-small btn-outline">Logout</a>
             {% else %}
-                <a href="{% url 'login' %}" class="btn btn-small btn-outline btn-animate">Login</a>
+                <a href="{% url 'login' %}" class="btn btn-small btn-outline">Login</a>
             {% endif %}
 
-            <a href="#" class="btn btn-small btn-filled btn-animate">Contact</a>
+            <a href="#" class="btn btn-small btn-filled">Contact</a>
         </nav>
     </div>
 </header>
 
 <div class="container">
-    <h1 class="animate-fade-in-down">My Consultation Requests</h1>
+    <h1>My Consultation Requests</h1>
 
     {% for req in requests %}
-    <div class="request-card card-animate hover-lift animate-fade-in" style="flex-direction: column; align-items: stretch;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div class="req-info">
-                <span class="req-cat">{{ req.category.name }}</span>
-                <h3>Lawyer: {{ req.lawyer.get_full_name }}</h3>
-                <p>Subject: {{ req.subject }}</p>
-                <p>Date: {{ req.created_at|date:"M d, Y" }}</p>
-            </div>
-
-            <div class="status-action-container">
-                {% if req.status == 'pending' %}
-                    <div class="status-badge pending">⏳ Pending Review</div>
-                
-                {% elif req.status == 'rejected' %}
-                    <div class="status-badge rejected">✗ Request Rejected</div>
-                
-                {% elif req.status == 'accepted' %}
-                    <div class="status-badge accepted">✓ Approved</div>
-                    <a href="{% url 'join_room' req.room_id %}" class="join-btn">
-                        Join Video Call
-                    </a>
-                {% endif %}
-            </div>
+    <div class="request-card">
+        <div class="req-info">
+            <span class="req-cat">{{ req.category.name }}</span>
+            <h3>Lawyer: {{ req.lawyer.get_full_name }}</h3>
+            <p>Subject: {{ req.subject }}</p>
+            <p>Date: {{ req.created_at|date:"M d, Y" }}</p>
         </div>
 
-        <!-- Transcript Section (Only for completed consultations) -->
-        {% if req.status == 'completed' %}
-            {% if req.call_transcript %}
-                <!-- Show Compact Transcript Toggle -->
-                <div class="transcript-compact" onclick="toggleTranscript(this)">
-                    <div class="transcript-compact-title">
-                        <span>📝</span>
-                        <span>Call Transcript & Summary</span>
-                        <span style="margin-left: auto; color: #888; font-size: 16px;">▼</span>
-                    </div>
-                </div>
-                <div class="transcript-content">
-                    <div class="transcript-text">{{ req.call_transcript|linebreaksbr }}</div>
-                </div>
-            {% elif req.transcript_status == 'processing' %}
-                <!-- Show Processing Indicator -->
-                <div class="transcript-processing">
-                    <div class="spinner"></div>
-                    <span class="processing-text">🎙️ Transcribing audio...</span>
-                </div>
-            {% else %}
-                <!-- Show No Transcript Message -->
-                <div class="transcript-pending">
-                    📄 No transcript available for this call
-                </div>
+        <div class="status-action-container">
+            {% if req.status == 'pending' %}
+                <div class="status-badge pending">⏳ Pending Review</div>
+            
+            {% elif req.status == 'rejected' %}
+                <div class="status-badge rejected">✗ Request Rejected</div>
+            
+            {% elif req.status == 'accepted' %}
+                <div class="status-badge accepted">✓ Approved</div>
+                <a href="{% url 'join_room' req.room_id %}" class="join-btn">
+                    Join Video Call
+                </a>
             {% endif %}
-        {% endif %}
+        </div>
     </div>
     {% empty %}
     <p style="color: #666; text-align: center; margin-top: 40px;">You haven't made any requests yet.</p>
     {% endfor %}
 </div>
-
-<script>
-function toggleTranscript(compactDiv) {
-    const content = compactDiv.nextElementSibling;
-    const arrow = compactDiv.querySelector('span[style*="margin-left"]');
-    
-    if (content.classList.contains('open')) {
-        content.classList.remove('open');
-        if (arrow) arrow.textContent = '▼';
-    } else {
-        content.classList.add('open');
-        if (arrow) arrow.textContent = '▲';
-    }
-}
-</script>
 
 </body>
 </html>

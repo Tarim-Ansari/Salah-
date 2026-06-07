@@ -8,9 +8,6 @@
     
     <!-- Professional Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
-    
-    <!-- Animation CSS -->
-    <link rel="stylesheet" href="{% static 'accounts/css/animations.css' %}">
 
     <style>
         /* CSS VARIABLES */
@@ -273,7 +270,7 @@
 <body>
 
 <!-- NAVBAR -->
-<header class="navbar navbar-animate">
+<header class="navbar">
     <div class="nav-inner">
         <div class="logo">⚖ SALAH</div>
         <nav>
@@ -284,16 +281,16 @@
                 <a href="{% url 'client_consultations' %}">My Consultations</a>
                 
                 <!-- Updated Wallet Link -->
-                <a href="{% url 'wallet' %}" class="wallet-pill hover-glow">
+                <a href="{% url 'wallet' %}" class="wallet-pill">
                     ₹{{ user.wallet.balance|default:"0.00" }}
                 </a>
 
-                <a href="{% url 'logout' %}" class="btn btn-small btn-outline btn-animate">Logout</a>
+                <a href="{% url 'logout' %}" class="btn btn-small btn-outline">Logout</a>
             {% else %}
-                <a href="{% url 'login' %}" class="btn btn-small btn-outline btn-animate">Login</a>
+                <a href="{% url 'login' %}" class="btn btn-small btn-outline">Login</a>
             {% endif %}
 
-            <a href="#" class="btn btn-small btn-filled btn-animate">Contact</a>
+            <a href="#" class="btn btn-small btn-filled">Contact</a>
         </nav>
     </div>
 </header>
@@ -304,28 +301,28 @@
 
         <!-- Left Content -->
         <div class="hero-text">
-            <h1 class="animate-fade-in-up">Lawyers You Can <br><span class="text-glow">Trust.</span></h1>
+            <h1>Lawyers You Can <br><span>Trust.</span></h1>
 
-            <p class="hero-subtitle animate-fade-in-up delay-200">
+            <p class="hero-subtitle">
                 Connect with verified advocates and law students for
                 reliable, confidential, and affordable legal guidance.
             </p>
 
-            <div class="hero-actions animate-fade-in-up delay-300">
-                <a href="{% url 'services' %}" class="btn btn-filled btn-animate">Talk to a Lawyer</a>
-                <a href="{% url 'experts' %}" class="btn btn-ghost btn-animate">Browse Experts</a>
+            <div class="hero-actions">
+                <a href="{% url 'services' %}" class="btn btn-filled">Talk to a Lawyer</a>
+                <a href="{% url 'experts' %}" class="btn btn-ghost">Browse Experts</a>
             </div>
 
             <div class="hero-stats">
-                <div class="stat-item animate-fade-in-up delay-400">
+                <div class="stat-item">
                     <strong>25+</strong>
                     <span>Years Experience</span>
                 </div>
-                <div class="stat-item animate-fade-in-up delay-500">
+                <div class="stat-item">
                     <strong>500+</strong>
                     <span>Clients Served</span>
                 </div>
-                <div class="stat-item animate-fade-in-up delay-600">
+                <div class="stat-item">
                     <strong>98%</strong>
                     <span>Success Rate</span>
                 </div>
@@ -333,7 +330,7 @@
         </div>
 
         <!-- Right Content -->
-        <div class="hero-image animate-fade-in-right delay-400">
+        <div class="hero-image">
             <div class="image-glow"></div>
             <img src="{% static 'accounts/images/statue.png' %}" alt="Lady Justice">
         </div>

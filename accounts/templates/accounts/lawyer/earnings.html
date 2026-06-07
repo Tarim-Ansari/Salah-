@@ -5,10 +5,7 @@
     <meta charset="UTF-8">
     <title>Earnings Report | SALAH</title>
     <!-- Professional Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">    
-    <!-- Animation CSS -->
-    <link rel="stylesheet" href="{% static 'accounts/css/animations.css' %}">
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     
     <style>
         /* ===== CSS VARIABLES (Matched to System) ===== */
@@ -199,7 +196,7 @@
 </head>
 <body>
 
-    <header class="navbar navbar-animate">
+    <header class="navbar">
         <div class="nav-inner">
             <div class="logo">⚖ SALAH <span style="font-size:0.7em; opacity:0.7;">(Expert)</span></div>
             <nav>
@@ -208,15 +205,15 @@
                 <a href="{% url 'lawyer_earnings' %}" class="active">Earnings</a>
                 <a href="{% url 'lawyer_profile' %}">Profile</a>
                 <a href="{% url 'wallet' %}" class="wallet-pill">₹{{ user.wallet.balance|default:"0" }}</a>
-                <a href="{% url 'logout' %}" class="btn-logout btn-animate">Logout</a>
+                <a href="{% url 'logout' %}" class="btn-logout">Logout</a>
                 
-                <a href="#" class="btn btn-small btn-filled btn-animate">Contact</a>
+                <a href="#" class="btn btn-small btn-filled">Contact</a>
             </nav>
         </div>
     </header>
 
     <div class="container">
-        <h1 class="animate-fade-in-down">Financial Overview</h1>
+        <h1>Financial Overview</h1>
         
         <!-- MAIN BALANCE CARD -->
         <div class="chart-box" style="margin-bottom: 20px;">
