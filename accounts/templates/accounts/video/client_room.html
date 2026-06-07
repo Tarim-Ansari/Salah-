@@ -72,8 +72,22 @@
                 Total to deduct: <span class="feedback-highlight" id="deduction-amount">₹0.00</span>
             </p>
         </div>
+        <div class="feedback-box" style="max-height: 200px; overflow-y: auto; padding: 0.75rem;">
+            <div class="info-label" style="padding: 0 0.25rem; margin-bottom: 8px;">AI Recommended Questions</div>
+            {% if questions %}
+                <ul style="list-style: none; padding: 0; margin: 0;">
+                    {% for question in questions %}
+                        <li style="padding: 5px 0.25rem; border-bottom: 1px solid #222; color: #ccc; font-size: 0.75rem; line-height: 1.3;">
+                            <span style="color: var(--gold-accent); margin-right: 6px; font-size: 0.7rem;">•</span>{{ question }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="feedback-text" style="margin: 0; font-size: 0.75rem;">No questions available.</p>
+            {% endif %}
+        </div>
 
-        <button id="end-call-btn" class="btn-end">End Consultation</button>
+        <button id="end-call-btn" class="btn-end btn-animate">End Consultation</button>
     </aside>
 
     <main class="video-wrapper">
@@ -98,11 +112,11 @@
             </div>
             
             <input type="hidden" id="selected-rating" value="0">
-            <textarea id="review-text" rows="3" placeholder="Write a brief review (optional)..."></textarea>
+            <textarea class="input-animate" id="review-text" rows="3" placeholder="Write a brief review (optional)..."></textarea>
             
-            <button onclick="submitRating()" class="btn-submit">Submit Rating</button>
+            <button onclick="submitRating()" class="btn-submit btn-animate">Submit Rating</button>
             <br>
-            <button onclick="skipRating()" class="btn-skip">Skip</button>
+            <button onclick="skipRating()" class="btn-skip btn-animate">Skip</button>
         </div>
     </div>
 

@@ -5,7 +5,10 @@
     <meta charset="UTF-8">
     <title>Dashboard | SALAH</title>
     <!-- Professional Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">    
+    <!-- Animation CSS -->
+    <link rel="stylesheet" href="{% static 'accounts/css/animations.css' %}">
+
     
     <style>
         /* ===== CSS VARIABLES (Matched to System) ===== */
@@ -193,7 +196,7 @@
 </head>
 <body>
 
-    <header class="navbar">
+    <header class="navbar navbar-animate">
         <div class="nav-inner">
             <div class="logo">⚖ SALAH <span style="font-size:0.7em; opacity:0.7;">(Expert)</span></div>
             <nav>
@@ -202,9 +205,9 @@
                 <a href="{% url 'lawyer_earnings' %}">Earnings</a>
                 <a href="{% url 'lawyer_profile' %}">Profile</a>
                 <a href="{% url 'wallet' %}" class="wallet-pill">₹{{ user.wallet.balance|default:"0" }}</a>
-                <a href="{% url 'logout' %}" class="btn-logout">Logout</a>
+                <a href="{% url 'logout' %}" class="btn-logout btn-animate">Logout</a>
                 
-            <a href="#" class="btn btn-small btn-filled">Contact</a>
+            <a href="#" class="btn btn-small btn-filled btn-animate">Contact</a>
             </nav>
         </div>
     </header>
@@ -221,7 +224,7 @@
                     {% endif %}
                 </div>
                 <div>
-                    <h1 style="margin:0;">Hello, {{ request.user.first_name|default:"Advocate" }}</h1>
+                    <h1 style="margin:0;" class="animate-fade-in-down">Hello, {{ request.user.first_name|default:"Advocate" }}</h1>
                     <p style="color:var(--text-gray); margin:5px 0 0;">Here is what's happening today.</p>
                 </div>
             </div>
@@ -230,15 +233,15 @@
 
         <!-- STATS -->
         <div class="stats-grid">
-            <div class="stat-card">
+            <div class="stat-card card-animate hover-lift animate-scale-in">
                 <h2>₹{{ today_earnings|floatformat:0 }}</h2>
                 <p>Today's Earnings</p>
             </div>
-            <div class="stat-card">
+            <div class="stat-card card-animate hover-lift animate-scale-in">
                 <h2>{{ total_consultations }}</h2>
                 <p>Total Consultations</p>
             </div>
-            <div class="stat-card">
+            <div class="stat-card card-animate hover-lift animate-scale-in">
                 <h2>{{ average_rating }} ★</h2>
                 <p>Client Rating</p>
             </div>
@@ -255,7 +258,7 @@
                         <h4>{{ req.client.get_full_name|default:"Client" }}</h4>
                         <span>Subject: {{ req.subject }}</span>
                     </div>
-                    <a href="{% url 'view_case_brief' req.id %}" class="btn-view">View Case Brief</a>
+                    <a href="{% url 'view_case_brief' req.id %}" class="btn-view btn-animate">View Case Brief</a>
                 </div>
                 {% endfor %}
             {% else %}

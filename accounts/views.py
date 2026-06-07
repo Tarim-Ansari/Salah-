@@ -3,15 +3,18 @@ from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from decimal import Decimal
-import uuid  
-import requests  
+import uuid
+import requests
 import time
-from django.conf import settings 
+from django.conf import settings
 import json
+import os
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt    
+from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Sum, Avg
 from django.utils import timezone
+from groq import Groq
+
 
 from .models import (
     User,
@@ -120,17 +123,163 @@ def request_consultation(request, lawyer_id):
         category_id = request.POST.get("category")
         subject = request.POST.get("subject")
         description = request.POST.get("description")
+        
+        # 1. Grab the NEW fields we added to the form
+        issue_start = request.POST.get("issue_start") or None  # Handle empty dates safely
+        opposing_party = request.POST.get("opposing_party")
+        current_status = request.POST.get("current_status")
+        desired_outcome = request.POST.get("desired_outcome")
+        documents = request.FILES.get("documents")  # 📁 Handle file uploads
+
         category = get_object_or_404(ServiceCategory, id=category_id)
 
+        ai_refined_description = request.POST.get("ai_refined_description")
+        estimated_cost = request.POST.get("estimated_cost") or None
+        estimated_duration = request.POST.get("estimated_duration") or None
+        
+        # Parse JSON string to Python object for JSONField
+        ai_client_checklist_raw = request.POST.get("ai_client_checklist")
+        ai_client_checklist = None
+        if ai_client_checklist_raw:
+            try:
+                ai_client_checklist = json.loads(ai_client_checklist_raw)
+            except json.JSONDecodeError:
+                ai_client_checklist = None  # Fallback if JSON is invalid
+
+        # WALLET VERIFICATION: Ensure user has sufficient balance
+        if estimated_cost:
+            try:
+                estimated_cost_decimal = Decimal(estimated_cost)
+                user_balance = request.user.wallet.balance
+                
+                if user_balance < estimated_cost_decimal:
+                    messages.error(
+                        request,
+                        f"Insufficient wallet balance. Required: ₹{estimated_cost_decimal}, "
+                        f"Available: ₹{user_balance}. Please recharge your wallet."
+                    )
+                    return redirect("wallet")
+            except (ValueError, AttributeError):
+                pass  # If conversion fails or wallet doesn't exist, proceed anyway
+
+        # 2. Save EVERYTHING to the database
         ConsultationRequest.objects.create(
-            client=request.user, lawyer=lawyer_profile.user,
-            category=category, subject=subject, description=description,
+            client=request.user, 
+            lawyer=lawyer_profile.user,
+            category=category, 
+            subject=subject, 
+            description=description,
+            # Pass the new fields here:
+            issue_start=issue_start,
+            opposing_party=opposing_party,
+            current_status=current_status,
+            desired_outcome=desired_outcome,
+            documents=documents,
+            ai_refined_description=ai_refined_description,
+            estimated_cost=estimated_cost,
+            estimated_duration=estimated_duration,
+            ai_client_checklist=ai_client_checklist
         )
         return redirect("client_consultations")
 
     return render(request, "accounts/client/case_brief.html", {
-        "lawyer": lawyer_profile, "categories": categories,
+        "lawyer": lawyer_profile, 
+        "categories": categories,
     })
+
+@csrf_exempt
+@login_required
+def evaluate_intake(request):
+    if request.method == "POST":
+        try:
+            body_data = json.loads(request.body)
+            category = body_data.get("category", "")
+            subject = body_data.get("subject", "")
+            description = body_data.get("description", "")
+            
+            # Grab the chat history from the Javascript
+            chat_history = body_data.get("chat_history", []) 
+            
+            client = Groq(api_key=settings.GROQ_API_KEY)
+            
+            # 1. Setup the messages array with your detailed prompt
+            messages = [
+                {
+                    "role": "system",
+                    "content":'''
+                    'You are the "SALAH AI Legal Intake Specialist," a high-precision paralegal system for an Indian Legal-Tech platform. Your goal is to transform raw user input into a professional, structured case brief while ensuring the user is prepared for their consultation.
+                    ### OPERATIONAL RULES:
+                    1. TONE: Professional, empathetic, and legally formal.
+                    2. CONTEXT: Follow Indian Law (IPC, BNS, CPC) and Indian legal procedures.
+                    3. COMPLETENESS THRESHOLD: You must ensure you have: (a) Clear identity of the opposing party, (b) Date or timeline of the dispute, (c) The specific "ask" or desired remedy, (d) Critical evidence status (contracts, receipts, etc.).
+                    4. NO HALLUCINATION: If the user provides vague info, do not guess. Ask.
+                    5. LOSSLESS SUMMARY: Your final summary must include every specific name, date, amount, and location mentioned by the user.
+
+                    ### OUTPUT FORMAT:
+                    You must ALWAYS respond in valid JSON. Do not include any text outside the JSON block.
+
+                    ### STATE 1: If the case is VAGUE or MISSING critical details:
+                    Return:
+                    {
+                    "status": "CLARIFYING",
+                    "reason": "Explain briefly why you need more info",
+                    "question": "The single most important question to ask the user next",
+                    "is_required": true
+                    }
+
+                    ### STATE 2: If the case is COMPLETE:
+                    Return:
+                    {
+                    "status": "FINALIZED",
+                    "refined_description": "A lossless, 3-paragraph professional legal brief. Para 1: Facts & Parties. Para 2: Dispute Timeline & Evidence. Para 3: Legal complication & Desired Outcome.",
+                    "estimated_duration": 15,
+                    "recommended_questions": ["3-5 specific, strategic questions the user should ask the lawyer during the call"],
+                    "relevant_statutes": ["Mention relevant Indian sections like IPC, Section 138 NI Act, etc., if applicable"]
+                    }'''
+                },
+                {
+                    "role": "user",
+                    "content": f"""
+                        Category: {category}, 
+                        Subject: {subject}, 
+                        Description: {description}
+                        """
+                }
+            ]
+            
+            # 2. Append the Chat History so Groq remembers the conversation
+            for chat in chat_history:
+                messages.append({"role": chat["role"], "content": chat["content"]})
+            
+            # 3. Call Groq
+            completion = client.chat.completions.create(
+                model="llama-3.3-70b-versatile",
+                response_format={"type": "json_object"}, # Safety net: forces Groq to output JSON
+                messages=messages
+            ) 
+            
+            # 4. Extract and clean the JSON response
+            raw_response = completion.choices[0].message.content
+            
+            # Strip markdown just in case (Safety Net)
+            cleaned_response = raw_response.replace("```json", "").replace("```", "").strip()
+            ai_data = json.loads(cleaned_response)
+
+            # 5. Send it back to the HTML page!
+            return JsonResponse(ai_data)
+
+        except Exception as e:
+            # If the AI hallucinates or API breaks, send a safe fallback
+            print(f"Groq Error: {e}")
+            fallback_data = {
+                "status": "FINALIZED",
+                "refined_description": description, # Safe fallback using original text
+                "estimated_duration": 15,
+                "recommended_questions": ["What are my legal rights?", "What is the next step?"]
+            }
+            return JsonResponse(fallback_data)
+
+    return JsonResponse({"error": "Invalid request method"}, status=400)
 
 @login_required
 def client_consultations(request):
@@ -310,7 +459,7 @@ def join_room(request, room_id):
                 "name": room_id,
                 "properties": {
                     "enable_chat": True, "start_video_off": False, "start_audio_off": False,
-                    "exp": int(time.time() + 7200) 
+                    "exp": int(time.time() + 7200)
                 }
             }
         )
@@ -319,7 +468,10 @@ def join_room(request, room_id):
 
     daily_url = f"https://{settings.DAILY_SUBDOMAIN}.daily.co/{room_id}"
 
-    # 3. STRICT ROUTING LOGIC
+    # 3. Extract AI-generated questions (if they exist)
+    questions = consultation.ai_client_checklist or []
+
+    # 4. STRICT ROUTING LOGIC
     # Check if the logged-in user is specifically the LAWYER for this case
     if request.user == consultation.lawyer:
         template = "accounts/video/lawyer_room.html"
@@ -334,13 +486,14 @@ def join_room(request, room_id):
         context = {
             "room_url": daily_url,
             "session_id": room_id,
-            "balance": request.user.wallet.balance, 
-            "rate": 20 
+            "balance": request.user.wallet.balance,
+            "rate": 20,
+            "questions": questions  # Pass questions to template
         }
         
     else:
         return redirect("home")
-
+    
     return render(request, template, context)
 
 
@@ -416,6 +569,118 @@ def rate_lawyer_api(request):
         except Exception as e:
             return JsonResponse({"status": "error", "message": str(e)}, status=500)
     return JsonResponse({"status": "error"}, status=400)
+
+
+# =========================
+# AUDIO PROCESSING WITH GROQ WHISPER
+# =========================
+@csrf_exempt
+@login_required
+def process_audio_api(request):
+    """
+    Receives audio file from client/lawyer, transcribes with Groq Whisper,
+    and appends transcript to consultation record.
+    """
+    if request.method == "POST":
+        try:
+            # Debug logging
+            print(f"[DEBUG] POST data keys: {list(request.POST.keys())}")
+            print(f"[DEBUG] FILES keys: {list(request.FILES.keys())}")
+            print(f"[DEBUG] Content-Type: {request.content_type}")
+            
+            audio_file = request.FILES.get('audio_file')
+            room_id = request.POST.get('room_id')
+            
+            print(f"[DEBUG] audio_file: {audio_file}")
+            print(f"[DEBUG] room_id: {room_id}")
+            
+            if not audio_file or not room_id:
+                return JsonResponse({
+                    "status": "error",
+                    "message": f"Missing audio_file ({bool(audio_file)}) or room_id ({bool(room_id)})",
+                    "debug": {
+                        "post_keys": list(request.POST.keys()),
+                        "files_keys": list(request.FILES.keys())
+                    }
+                }, status=400)
+            
+            # Get consultation
+            consultation = get_object_or_404(ConsultationRequest, room_id=room_id)
+            
+            # Verify user is part of this consultation
+            if request.user not in [consultation.client, consultation.lawyer]:
+                return JsonResponse({
+                    "status": "error",
+                    "message": "Unauthorized"
+                }, status=403)
+            
+            # Set status to processing
+            consultation.transcript_status = 'processing'
+            consultation.save()
+            
+            # Save temporary audio file
+            temp_filename = f"temp_{room_id}_{request.user.id}_{int(time.time())}.webm"
+            temp_path = os.path.join(settings.MEDIA_ROOT, temp_filename)
+            
+            # Ensure media directory exists
+            os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
+            
+            with open(temp_path, 'wb+') as f:
+                for chunk in audio_file.chunks():
+                    f.write(chunk)
+            
+            # Transcribe with Groq Whisper
+            client = Groq(api_key=settings.GROQ_API_KEY)
+            
+            with open(temp_path, "rb") as file:
+                transcription = client.audio.transcriptions.create(
+                    file=(temp_filename, file.read()),
+                    model="whisper-large-v3",
+                    response_format="text",
+                    language="en"  # Can be changed to "hi" for Hindi or removed for auto-detect
+                )
+            
+            # Determine speaker role
+            speaker_role = "CLIENT" if request.user == consultation.client else "LAWYER"
+            
+            # Append transcript to consultation
+            existing_transcript = consultation.call_transcript or ""
+            new_transcript = f"\n\n[{speaker_role}]:\n{transcription}"
+            consultation.call_transcript = existing_transcript + new_transcript
+            consultation.transcript_status = 'completed'
+            consultation.save()
+            
+            # Cleanup temporary file
+            try:
+                os.remove(temp_path)
+            except Exception as e:
+                print(f"Warning: Could not delete temp file {temp_path}: {e}")
+            
+            return JsonResponse({
+                "status": "success",
+                "message": "Audio transcribed successfully",
+                "speaker": speaker_role,
+                "transcript_length": len(transcription)
+            })
+            
+        except Exception as e:
+            # Cleanup temp file on error
+            if 'temp_path' in locals() and os.path.exists(temp_path):
+                try:
+                    os.remove(temp_path)
+                except:
+                    pass
+            
+            return JsonResponse({
+                "status": "error",
+                "message": str(e)
+            }, status=500)
+    
+    return JsonResponse({
+        "status": "error",
+        "message": "Invalid method"
+    }, status=405)
+
 
 @login_required
 def view_case_brief(request, request_id):

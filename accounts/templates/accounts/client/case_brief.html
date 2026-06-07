@@ -7,166 +7,44 @@
     <title>Case Brief | SALAH</title>
 
     <style>
-        body {
-            background: radial-gradient(circle at top, #1a1a1a 0%, #000 55%);
-            color: #eaeaea;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        }
-
-        .case-container {
-            max-width: 880px;
-            margin: 80px auto;
-            padding: 40px;
-            background: linear-gradient(180deg, #111, #0b0b0b);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 20px;
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-bottom: 20px;
-            font-size: 14px;
-            color: #aaa;
-            text-decoration: none;
-        }
-
-        .back-link:hover {
-            color: #d4a13a;
-        }
-
-        h2 {
-            margin: 0;
-            font-size: 28px;
-            color: #fff;
-        }
-
-        .subtitle {
-            margin-top: 6px;
-            font-size: 14px;
-            color: #999;
-        }
-
-        /* =========================
-           FORM GRID
-        ========================= */
-        form {
-            margin-top: 30px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 22px;
-            align-items: start;
-        }
-
-        form > div {
-            display: flex;
-            flex-direction: column;
-        }
-
-        label {
-            font-size: 13px;
-            color: #ccc;
-            margin-bottom: 6px;
-            line-height: 1.2;
-        }
-
-        input,
-        select,
-        textarea {
-            width: 100%;
-            padding: 12px 14px;
-            background: #0f0f0f;
-            border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 10px;
-            color: #fff;
-            font-size: 14px;
-            height: 46px;
-            box-sizing: border-box;
-        }
-
-        textarea {
-            height: auto;
-            min-height: 140px;
-            resize: none;
-        }
-
-        input::placeholder,
-        textarea::placeholder {
-            color: #777;
-        }
-
-        /* Date picker icon white */
-        input[type="date"]::-webkit-calendar-picker-indicator {
-            filter: invert(1);
-            cursor: pointer;
-        }
-
-        /* Custom select arrow */
-        select {
-            appearance: none;
-            background-image:
-                linear-gradient(45deg, transparent 50%, #aaa 50%),
-                linear-gradient(135deg, #aaa 50%, transparent 50%);
-            background-position:
-                calc(100% - 18px) 20px,
-                calc(100% - 13px) 20px;
-            background-size: 5px 5px;
-            background-repeat: no-repeat;
-        }
-
-        .full-width {
-            grid-column: span 2;
-        }
-
-        .upload-box {
-            padding: 14px;
-            background: #0f0f0f;
-            border: 1px dashed rgba(255,255,255,0.18);
-            border-radius: 12px;
-            font-size: 13px;
-            color: #aaa;
-        }
-
-        .upload-box input {
-            margin-top: 8px;
-        }
-
-        .submit-btn {
-            grid-column: span 2;
-            margin-top: 10px;
-            padding: 14px;
-            background: #d4a13a;
-            border: none;
-            border-radius: 999px;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            color: #000;
-        }
-
-        .submit-btn:hover {
-            background: #c08f2f;
-        }
-
-        /* =========================
-           MOBILE
-        ========================= */
-        @media (max-width: 768px) {
-            form {
-                grid-template-columns: 1fr;
-            }
-
-            .full-width {
-                grid-column: span 1;
-            }
-        }
-
-        
+        body { background: radial-gradient(circle at top, #1a1a1a 0%, #000 55%); color: #eaeaea; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+        .case-container { max-width: 880px; margin: 80px auto; padding: 40px; background: linear-gradient(180deg, #111, #0b0b0b); border: 1px solid rgba(255,255,255,0.06); border-radius: 20px; }
+        .back-link { display: inline-block; margin-bottom: 20px; font-size: 14px; color: #aaa; text-decoration: none; }
+        .back-link:hover { color: #d4a13a; }
+        h2 { margin: 0; font-size: 28px; color: #fff; }
+        .subtitle { margin-top: 6px; font-size: 14px; color: #999; }
+        form { margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: start; }
+        form > div { display: flex; flex-direction: column; }
+        label { font-size: 13px; color: #ccc; margin-bottom: 6px; line-height: 1.2; }
+        input, select, textarea { width: 100%; padding: 12px 14px; background: #0f0f0f; border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; color: #fff; font-size: 14px; height: 46px; box-sizing: border-box; }
+        textarea { height: auto; min-height: 140px; resize: none; }
+        input::placeholder, textarea::placeholder { color: #777; }
+        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
+        select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, #aaa 50%), linear-gradient(135deg, #aaa 50%, transparent 50%); background-position: calc(100% - 18px) 20px, calc(100% - 13px) 20px; background-size: 5px 5px; background-repeat: no-repeat; }
+        .full-width { grid-column: span 2; }
+        .upload-box { padding: 14px; background: #0f0f0f; border: 1px dashed rgba(255,255,255,0.18); border-radius: 12px; font-size: 13px; color: #aaa; }
+        .upload-box input { margin-top: 8px; }
+        .gold-btn { background: #d4a13a; border: none; border-radius: 999px; font-size: 15px; font-weight: 700; cursor: pointer; color: #000; padding: 14px; transition: background 0.3s; }
+        .gold-btn:hover { background: #c08f2f; }
+        #ai-expansion-container, #triage-dashboard { grid-column: span 2; }
+        .ai-chat-bubble { padding: 10px; border-radius: 8px; margin-bottom: 10px; font-size: 14px; line-height: 1.4; }
+        .ai-message { background: rgba(212, 161, 58, 0.1); border-left: 3px solid #d4a13a; color: #fff; }
+        .user-message { background: #222; color: #ccc; margin-left: 20px; }
+        #triage-dashboard { background: #0a0a0a; border: 1px solid #d4a13a; border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .triage-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; padding: 20px 0; margin-bottom: 20px; }
+        .triage-card { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.08); }
+        .triage-label { font-size: 11px; letter-spacing: 1px; color: #888; text-transform: uppercase; margin-bottom: 10px; display: block; }
+        .triage-value { font-size: 28px; color: #fff; font-weight: 600; margin: 0; }
+        #ai-questions-list { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 20px; margin-top: 15px; border: 1px solid rgba(255,255,255,0.08); }
+        .checkbox-row { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 15px; font-size: 14px; color: #ccc; line-height: 1.6; }
+        .checkbox-row input[type="checkbox"] { margin-top: 4px; width: 18px; height: 18px; cursor: pointer; flex-shrink: 0; }
+        .checkbox-row span { flex: 1; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <div class="case-container">
-
     <a href="javascript:history.back()" class="back-link">← Back</a>
 
     <h2>Case Brief</h2>
@@ -174,77 +52,267 @@
         Please provide details so <strong>{{ lawyer.user.get_full_name }}</strong> can understand your case better.
     </p>
 
-    <form method="POST" enctype="multipart/form-data">
+    <!-- CRITICAL: Form tag with action, POST method, and multipart encoding -->
+    <form action="{% url 'request_consultation' lawyer.id %}" method="POST" enctype="multipart/form-data" id="case-brief-form">
         {% csrf_token %}
 
-        <!-- Case Category -->
+        <!-- HIDDEN INPUTS TO STORE AI DATA FOR DJANGO -->
+        <input type="hidden" name="ai_refined_description" id="hidden_ai_desc">
+        <input type="hidden" name="estimated_cost" id="hidden_est_cost">
+        <input type="hidden" name="estimated_duration" id="hidden_est_duration">
+        <input type="hidden" name="ai_client_checklist" id="hidden_ai_checklist">
+
+        <!-- Basic Form Fields -->
         <div>
             <label>Case Category</label>
-            <select name="category" required>
+            <select class="input-animate" class="input-animate" name="category" required>
                 <option value="">Select Category</option>
                 {% for c in categories %}
                     <option value="{{ c.id }}">{{ c.name }}</option>
                 {% endfor %}
             </select>
         </div>
-
-        <!-- Subject -->
         <div>
             <label>Case Subject</label>
-            <input type="text" name="subject"
-                   placeholder="e.g. Landlord refusing to return deposit"
-                   required>
+            <input type="text" class="input-animate" class="input-animate" name="subject" placeholder="e.g. Landlord refusing to return deposit" required>
         </div>
-
-        <!-- Start Date -->
         <div>
             <label>When did the issue start?</label>
             <input type="date" name="issue_start">
         </div>
-
-        <!-- Opposing Party -->
         <div>
             <label>Opposing Party</label>
-            <input type="text" name="opposing_party"
-                   placeholder="e.g. Employer, Builder, State">
+            <input type="text" class="input-animate" class="input-animate" name="opposing_party" placeholder="e.g. Employer, Builder, State">
         </div>
-
-        <!-- Status -->
         <div>
             <label>Current Status</label>
-            <input type="text" name="current_status"
-                   placeholder="Just started / Ongoing / Urgent">
+            <input type="text" class="input-animate" class="input-animate" name="current_status" placeholder="Just started / Ongoing / Urgent">
         </div>
-
-        <!-- Desired Outcome -->
         <div>
             <label>Desired Outcome</label>
-            <input type="text" name="desired_outcome"
-                   placeholder="e.g. Refund, Compensation">
+            <input type="text" class="input-animate" class="input-animate" name="desired_outcome" placeholder="e.g. Refund, Compensation">
         </div>
-
-        <!-- Description -->
         <div class="full-width">
             <label>Detailed Description</label>
-            <textarea name="description"
-                      placeholder="Explain your case in detail..."
-                      required></textarea>
+            <textarea class="input-animate" class="input-animate" name="description" placeholder="Explain your case in detail..." required></textarea>
         </div>
-
-        <!-- Upload -->
         <div class="full-width upload-box">
             <label>Upload Documents (optional)</label>
             <input type="file" name="documents">
         </div>
 
-        <!-- Submit -->
-        <button type="submit" class="submit-btn">
-            Submit Case Brief
-        </button>
+        <!-- Phase 1 Step 1: Analyze Button -->
+        <div id="initial-form-section" class="full-width">
+            <button type="button" id="start-ai-btn" class="gold-btn" style="width: 100%;">
+                Analyze My Case with SALAH AI
+            </button>
+        </div>
+
+        <!-- Phase 1 Step 2: Dynamic AI Chat -->
+        <div id="ai-expansion-container" style="display: none; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 30px;">
+            <p style="color: #d4a13a; font-weight: 600; margin-bottom: 20px;">AI Case Refinement</p>
+            
+            <!-- Chat history renders here -->
+            <div id="ai-chat-history"></div>
+
+            <div id="ai-loader" style="display: none; color: #d4a13a; font-size: 14px; margin-bottom: 15px;">
+                Searching for legal gaps...
+            </div>
+
+            <!-- Single Input Box for Replies -->
+            <div id="ai-action-area" style="display: none; margin-top: 15px;">
+                <input type="text" class="input-animate" class="input-animate" id="user-reply-input" placeholder="Type your answer..." style="margin-bottom: 10px;">
+                <button type="button" id="submit-additional-info" class="gold-btn" style="width: 100%;">
+                    Reply to AI
+                </button>
+            </div>
+        </div>
+
+        <!-- Phase 1 Step 3: Triage Dashboard -->
+        <div id="triage-dashboard" style="display: none; margin-top: 40px;">
+            <h3 style="color: #d4a13a; margin: 0 0 8px 0; font-size: 24px;">Analysis Complete</h3>
+            <p style="font-size: 13px; color: #777; margin: 0 0 25px 0;">Your brief has been structured for the lawyer.</p>
+            
+            <div class="triage-grid">
+                <div class="triage-card">
+                    <span class="triage-label">Estimated Time</span>
+                    <p id="display-duration" class="triage-value">-- mins</p>
+                </div>
+                <div class="triage-card">
+                    <span class="triage-label">Required Balance</span>
+                    <p id="display-cost" class="triage-value" style="color: #d4a13a;">₹ --</p>
+                </div>
+            </div>
+
+            <div style="margin-top: 10px;">
+                <span class="triage-label" style="display: block; margin-bottom: 15px; font-size: 12px;">Recommended Questions for Lawyer</span>
+                <div id="ai-questions-list"></div>
+            </div>
+
+            <!-- CRITICAL: type="submit" so it saves to the database -->
+            <button type="submit" id="proceed-to-call-btn" class="gold-btn" style="width: 100%; margin-top: 30px;">
+                Connect to Lawyer
+            </button>
+        </div>
 
     </form>
-
 </div>
+
+<!-- ========================================== -->
+<!-- JAVASCRIPT FOR AI CHAT & API CONNECTION    -->
+<!-- ========================================== -->
+<script>
+// Read wallet balance from Django template
+const USER_BALANCE = parseFloat("{{ user.wallet.balance|default:'0' }}");
+
+let chatHistory = [];
+
+async function askAI(isReply = false) {
+    const categorySelect = document.querySelector('select[name="category"]');
+    const category = categorySelect.options[categorySelect.selectedIndex]?.text || "";
+    const subject = document.querySelector('input[name="subject"]').value;
+    const description = document.querySelector('textarea[name="description"]').value;
+
+    if (!description || !subject) {
+        alert("Please fill out the Subject and Description first!");
+        return;
+    }
+
+    if (isReply) {
+        const replyInput = document.getElementById("user-reply-input");
+        const userReply = replyInput.value.trim();
+        if (!userReply) return;
+        
+        // Add user reply to UI and history
+        document.getElementById("ai-chat-history").innerHTML += `
+            <div class="ai-chat-bubble user-message">You: ${userReply}</div>
+        `;
+        chatHistory.push({ role: "user", content: userReply });
+        
+        replyInput.value = ""; // Clear input
+        document.getElementById("ai-action-area").style.display = "none"; // Hide input while thinking
+        document.getElementById("ai-loader").style.display = "block";
+    } else {
+        document.getElementById("ai-loader").style.display = "block";
+        document.getElementById("start-ai-btn").innerText = "Analyzing...";
+    }
+
+    try {
+        const response = await fetch("/api/evaluate-intake/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({
+                category: category,
+                subject: subject,
+                description: description,
+                chat_history: chatHistory
+            })
+        });
+
+        const data = await response.json();
+        document.getElementById("ai-loader").style.display = "none";
+
+        // ==========================================
+        // STATE 1: AI NEEDS CLARIFICATION
+        // ==========================================
+        if (data.status === "CLARIFYING") {
+            document.getElementById("initial-form-section").style.display = "none"; 
+            document.getElementById("ai-expansion-container").style.display = "block"; 
+            
+            // Add AI Question to UI and history
+            document.getElementById("ai-chat-history").innerHTML += `
+                <div class="ai-chat-bubble ai-message"><strong>SALAH AI:</strong> ${data.question}</div>
+            `;
+            chatHistory.push({ role: "assistant", content: data.question });
+            
+            // Show input area for user to reply
+            document.getElementById("ai-action-area").style.display = "block";
+            document.getElementById("user-reply-input").focus();
+        } 
+        // ==========================================
+        // STATE 2: AI IS FINISHED
+        // ==========================================
+        else if (data.status === "FINALIZED") {
+            // Populate Hidden Inputs for Database
+            document.getElementById("hidden_ai_desc").value = data.refined_description;
+            const estimatedCost = data.estimated_duration * 20;
+            document.getElementById("hidden_est_cost").value = estimatedCost;
+            document.getElementById("hidden_est_duration").value = data.estimated_duration;
+            document.getElementById("hidden_ai_checklist").value = JSON.stringify(data.recommended_questions);
+
+            // Hide chat box, Show Final Dashboard
+            document.getElementById("ai-expansion-container").style.display = "none";
+            document.getElementById("triage-dashboard").style.display = "block";
+            
+            document.getElementById("display-duration").innerText = data.estimated_duration + " mins";
+            document.getElementById("display-cost").innerText = "₹" + estimatedCost;
+            
+            const ul = document.getElementById("ai-questions-list");
+            ul.innerHTML = "";
+            data.recommended_questions.forEach(q => {
+                ul.innerHTML += `<div class="checkbox-row"><input type="checkbox"> <span>${q}</span></div>`;
+            });
+            
+            document.getElementById("initial-form-section").style.display = "none";
+            
+            // Store estimated cost for wallet verification
+            window.currentEstimatedCost = estimatedCost;
+        }
+
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Something went wrong with the AI analysis. Please check your console.");
+        document.getElementById("start-ai-btn").innerText = "Analyze My Case with SALAH AI";
+        document.getElementById("ai-loader").style.display = "none";
+    }
+}
+
+// Wallet Verification Function
+function verifyWalletAndSubmit(event) {
+    const estimatedCost = window.currentEstimatedCost || 0;
+    
+    if (USER_BALANCE < estimatedCost) {
+        event.preventDefault(); // Stop form submission
+        
+        const deficit = estimatedCost - USER_BALANCE;
+        alert(
+            `Insufficient Wallet Balance!\n\n` +
+            `Required: ₹${estimatedCost}\n` +
+            `Current Balance: ₹${USER_BALANCE}\n` +
+            `Shortfall: ₹${deficit.toFixed(2)}\n\n` +
+            `Please recharge your wallet to proceed with the consultation.`
+        );
+        
+        // Redirect to wallet page
+        if (confirm("Would you like to recharge your wallet now?")) {
+            window.location.href = "/wallet/";
+        }
+        
+        return false;
+    }
+    
+    // If balance is sufficient, allow form submission
+    return true;
+}
+
+// Event Listeners
+document.getElementById("start-ai-btn").addEventListener("click", () => askAI(false));
+document.getElementById("submit-additional-info").addEventListener("click", () => askAI(true));
+
+// Wallet verification on form submission
+document.getElementById("proceed-to-call-btn").addEventListener("click", verifyWalletAndSubmit);
+
+// Pressing "Enter" in the chat box triggers reply
+document.getElementById("user-reply-input").addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        askAI(true);
+    }
+});
+</script>
 
 </body>
 </html>

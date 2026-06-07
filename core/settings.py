@@ -118,6 +118,7 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 DAILY_API_KEY = os.getenv("DAILY_API_KEY")
 DAILY_SUBDOMAIN = os.getenv("DAILY_SUBDOMAIN")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 
 # core/settings.py

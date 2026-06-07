@@ -251,7 +251,7 @@
 <body>
 
 <!-- NAVBAR (Matched to Home) -->
-<header class="navbar">
+<header class="navbar navbar-animate">
     <div class="nav-inner">
         <div class="logo">⚖ SALAH</div>
         <nav>
@@ -265,12 +265,12 @@
                     ₹{{ user.wallet.balance|default:"0.00" }}
                 </a>
 
-                <a href="{% url 'logout' %}" class="btn btn-small btn-outline">Logout</a>
+                <a href="{% url 'logout' %}" class="btn btn-small btn-outline btn-animate">Logout</a>
             {% else %}
-                <a href="{% url 'login' %}" class="btn btn-small btn-outline">Login</a>
+                <a href="{% url 'login' %}" class="btn btn-small btn-outline btn-animate">Login</a>
             {% endif %}
 
-            <a href="#" class="btn btn-small btn-filled">Contact</a>
+            <a href="#" class="btn btn-small btn-filled btn-animate">Contact</a>
         </nav>
     </div>
 </header>
@@ -280,7 +280,7 @@
 
     <div class="services-left">
         <!-- Font changed to Playfair Display, Last word colored Gold -->
-        <h1>Expert Legal<br>Support When<br>It <span>Matters Most.</span></h1>
+        <h1 class="animate-fade-in-down">Expert Legal<br>Support When<br>It <span>Matters Most.</span></h1>
         <p>
             Our experienced team of legal professionals provides comprehensive
             legal services across multiple practice areas, delivering results
@@ -290,37 +290,37 @@
 
     <div class="services-grid">
 
-        <a href="{% url 'experts' %}?category=family" class="service-card">
+        <a href="{% url 'experts' %}?category=family" class="service-card card-animate hover-lift animate-scale-in">
             <div class="icon">♡</div>
             <h3>Family Law</h3>
             <p>Divorce, custody, adoption, and family dispute resolution.</p>
         </a>
 
-        <a href="{% url 'experts' %}?category=civil" class="service-card">
+        <a href="{% url 'experts' %}?category=civil" class="service-card card-animate hover-lift animate-scale-in">
             <div class="icon">💼</div>
             <h3>Civil Law</h3>
             <p>Contract disputes, property rights, and personal claims.</p>
         </a>
 
-        <a href="{% url 'experts' %}?category=criminal" class="service-card">
+        <a href="{% url 'experts' %}?category=criminal" class="service-card card-animate hover-lift animate-scale-in">
             <div class="icon">🛡</div>
             <h3>Criminal Law</h3>
             <p>Strong defense strategies for criminal charges and bail.</p>
         </a>
 
-        <a href="{% url 'experts' %}?category=corporate" class="service-card">
+        <a href="{% url 'experts' %}?category=corporate" class="service-card card-animate hover-lift animate-scale-in">
             <div class="icon">🏢</div>
             <h3>Business Law</h3>
             <p>Corporate formation, mergers, compliance, and litigation.</p>
         </a>
 
-        <a href="{% url 'experts' %}?category=education" class="service-card">
+        <a href="{% url 'experts' %}?category=education" class="service-card card-animate hover-lift animate-scale-in">
             <div class="icon">🎓</div>
             <h3>Education Law</h3>
             <p>Student rights, school disputes, special education, and academic appeals.</p>
         </a>
 
-        <a href="{% url 'experts' %}?category=tax" class="service-card">
+        <a href="{% url 'experts' %}?category=tax" class="service-card card-animate hover-lift animate-scale-in">
             <div class="icon">📄</div>
             <h3>Tax Law</h3>
             <p>Tax planning, disputes, compliance, and representation before tax authorities.</p>

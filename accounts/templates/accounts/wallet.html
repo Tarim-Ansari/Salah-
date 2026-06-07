@@ -200,7 +200,7 @@
 </head>
 <body>
 
-    <header class="navbar">
+    <header class="navbar navbar-animate">
         <div class="nav-inner">
             <div class="logo">⚖ SALAH {% if user.role == 'lawyer' %}<span style="font-size:0.7em; opacity:0.7;">(Expert)</span>{% endif %}</div>
             
@@ -222,8 +222,8 @@
 
                 <!-- Shared Elements -->
                 <a href="{% url 'wallet' %}" class="wallet-pill active">₹{{ user.wallet.balance|default:"0" }}</a>
-                <a href="{% url 'logout' %}" class="btn-logout">Logout</a>
-                <a href="#" class="btn btn-small btn-filled">Contact</a>
+                <a href="{% url 'logout' %}" class="btn-logout btn-animate">Logout</a>
+                <a href="#" class="btn btn-small btn-filled btn-animate">Contact</a>
             </nav>
         </div>
     </header>
@@ -237,7 +237,7 @@
             <form action="{% url 'add_funds' %}" method="POST" class="add-funds-form">
                 {% csrf_token %}
                 <input type="number" name="amount" placeholder="Amount (₹)" required min="1">
-                <button type="submit" class="btn-add">Add Funds</button>
+                <button type="submit" class="btn-add btn-animate">Add Funds</button>
             </form>
             {% else %}
             <p style="color:var(--text-gray); font-size:0.9rem;">Withdrawals are processed automatically every Friday.</p>
