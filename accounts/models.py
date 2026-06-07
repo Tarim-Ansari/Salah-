@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 from django.utils import timezone
+
 # --------------------
 # Custom User
 # --------------------
@@ -46,53 +47,17 @@ class ConsultationRequest(models.Model):
         ("pending", "Pending"),
         ("accepted", "Accepted"),
         ("rejected", "Rejected"),
-        ("completed", "Completed"), # Added completed status
     )
     client = models.ForeignKey(User, on_delete=models.CASCADE, related_name="client_requests")
     lawyer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="lawyer_requests")
     category = models.ForeignKey(ServiceCategory, on_delete=models.SET_NULL, null=True)
     subject = models.CharField(max_length=255)
     description = models.TextField()
-    
-    # 2. NEW DETAILED CASE BRIEF FIELDS (Added to match the HTML form)
-    issue_start = models.DateField(blank=True, null=True)
-    opposing_party = models.CharField(max_length=255, blank=True, null=True)
-    current_status = models.CharField(max_length=255, blank=True, null=True)
-    desired_outcome = models.CharField(max_length=255, blank=True, null=True)
-    documents = models.FileField(upload_to="case_docs/", blank=True, null=True)
-
-    # 3. METADATA
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
     room_id = models.CharField(max_length=100, blank=True, null=True)
     amount_paid = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    # 4. PHASE 1 (PRE-CALL) AI FIELDS
-    ai_refined_description = models.TextField(blank=True, null=True)
-    estimated_cost = models.DecimalField(max_digits=10, null=True, blank=True, decimal_places=2)
-    estimated_duration = models.IntegerField(blank=True, null=True)
-    ai_client_checklist = models.JSONField(blank=True, null=True)
-
-    # 5. PHASE 3 (POST-CALL) AI FIELDS
-    call_transcript = models.TextField(blank=True, null=True)
-    transcript_status = models.CharField(
-        max_length=20,
-        choices=[
-            ('pending', 'Pending'),
-            ('processing', 'Processing'),
-            ('completed', 'Completed'),
-            ('failed', 'Failed')
-        ],
-        default='pending'
-    )
-    ai_call_summary = models.TextField(blank=True, null=True)
-    ai_execution_plan = models.JSONField(blank=True, null=True)
-    ai_drafted_document = models.TextField(blank=True, null=True)
-    case_milestone = models.CharField(max_length=100, default="Pending Consultation")
-
-    def __str__(self):
-        return f"{self.subject} ({self.client.username} -> {self.lawyer.username})"
-    
 # --------------------
 # Rating
 # --------------------
